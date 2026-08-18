@@ -1,0 +1,784 @@
+/* ========================= */
+/* KANBAN                    */
+/* ========================= */
+
+.kanban {
+  width: 100%;
+  max-width: 1250px;
+  margin: 25px auto 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+  
+}
+
+/* ========================= */
+/* COLUNAS                   */
+/* ========================= */
+
+.kanban-coluna {
+  width: 100%;
+  min-width: 0;
+  min-height: 400px;
+
+  background: linear-gradient(
+    180deg,
+    #4d0758 0%,
+    #3b0647 100%
+  );
+
+  border: 1px solid #8e2a9e;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 6px 18px rgba(35, 0, 45, 0.35);
+  overflow: hidden;
+}
+
+
+/* ========================= */
+/* CABEÇALHO DA COLUNA       */
+/* ========================= */
+
+.kanban-coluna-header {
+  width: 100%;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 10px;
+
+  margin-bottom: 16px;
+
+  padding-bottom: 10px;
+
+  border-bottom: 1px solid #7c258c;
+}
+
+
+/* Nome da coluna */
+
+.kanban-coluna-header h3 {
+  margin: 0;
+
+  color: #ffffff;
+
+  font-size: 19px;
+  font-weight: 700;
+
+  line-height: 1.2;
+
+  text-align: left;
+}
+
+
+/* Área contador + botão */
+
+.kanban-header-acoes {
+  display: flex;
+
+  align-items: center;
+
+  gap: 8px;
+}
+
+
+/* Contador */
+
+.kanban-contador {
+  min-width: 25px;
+
+  padding: 4px 7px;
+
+  border-radius: 6px;
+
+  background-color: #73177d;
+
+  color: #ffffff;
+
+  font-size: 13px;
+
+  font-weight: bold;
+
+  text-align: center;
+}
+
+
+/* ========================= */
+/* BOTÃO +                   */
+/* ========================= */
+
+.kanban-btn-add {
+  flex-shrink: 0;
+
+  width: 32px;
+  height: 32px;
+
+  padding: 0;
+
+  border: 2px solid #f5a6ff;
+
+  border-radius: 7px;
+
+  background-color: #a00998;
+
+  color: white;
+
+  font-size: 21px;
+  font-weight: bold;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  cursor: pointer;
+
+  transition: 0.2s;
+}
+
+.kanban-btn-add:hover {
+  background-color: #d31bc7;
+
+  border-color: #ffffff;
+
+  transform: scale(1.05);
+}
+
+.kanban-btn-add:active {
+  transform: scale(0.95);
+}
+
+
+/* ========================= */
+/* LISTA DE TAREFAS          */
+/* ========================= */
+
+.lista-tarefas {
+  width: 100%;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 10px;
+}
+
+
+/* ========================= */
+/* MENSAGEM VAZIA            */
+/* ========================= */
+
+.msg-vazia {
+  width: 100%;
+
+  text-align: center;
+
+  color: #e8cce9;
+
+  margin-top: 25px;
+
+  line-height: 1.4;
+
+  font-size: 14px;
+}
+
+
+/* ========================= */
+/* CARDS                     */
+/* ========================= */
+
+.card {
+  width: 100%;
+
+  background: linear-gradient(
+    135deg,
+    #2f1738,
+    #351b40
+  );
+
+  border: 1px solid #71347c;
+
+  border-left: 5px solid #a00998;
+
+  border-radius: 8px;
+
+  padding: 11px;
+
+  margin: 0;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 7px;
+
+  transition: 0.2s;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+
+  border-color: #a943b8;
+
+  box-shadow: 0 5px 12px rgba(170, 20, 180, 0.25);
+}
+
+
+/* ========================= */
+/* TEXTO DA TAREFA           */
+/* ========================= */
+
+.card p {
+  width: 100%;
+
+  margin: 0;
+
+  color: #ffffff;
+
+  font-weight: 500;
+
+  font-size: 15px;
+
+  line-height: 1.35;
+
+  overflow-wrap: anywhere;
+}
+
+
+/* ========================= */
+/* CIDADE                    */
+/* ========================= */
+
+.card .cidade {
+  display: block;
+
+  margin: 0;
+
+  font-size: 12px;
+
+  color: #f29df5;
+
+  font-style: italic;
+}
+
+
+/* ========================= */
+/* PRIORIDADES               */
+/* ========================= */
+
+.card.alta {
+  border-left: 6px solid #ff3b30;
+}
+
+.card.media {
+  border-left: 6px solid #ffcc00;
+}
+
+.card.baixa {
+  border-left: 6px solid #34c759;
+}
+
+
+/* ========================= */
+/* ÁREA DOS BOTÕES           */
+/* ========================= */
+
+.acoes {
+  width: 100%;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: flex-end;
+
+  gap: 5px;
+
+  margin-top: 3px;
+}
+
+
+/* ========================= */
+/* BOTÕES DO CARD             */
+/* ========================= */
+
+.card button {
+  min-width: 30px;
+
+  height: 28px;
+
+  padding: 4px 7px;
+
+  border: 1px solid #75327f;
+
+  border-radius: 5px;
+
+  cursor: pointer;
+
+  background-color: #54135f;
+
+  color: white;
+
+  font-size: 13px;
+
+  display: inline-flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  transition: 0.2s;
+}
+
+.card button:hover {
+  background-color: #a00998;
+
+  border-color: #e17ce7;
+
+  transform: scale(1.05);
+}
+
+.card button:active {
+  transform: scale(0.95);
+}
+
+
+/* ========================= */
+/* FILTRO                    */
+/* ========================= */
+
+.filtro-prioridade {
+  display: flex;
+
+  align-items: center;
+
+  gap: 10px;
+
+  margin: 15px 0;
+}
+
+.filtro-prioridade label {
+  font-size: 14px;
+
+  color: white;
+}
+
+#filtro-prioridade {
+  padding: 8px 10px;
+
+  border: 1px solid #873092;
+
+  border-radius: 6px;
+
+  outline: none;
+
+  background-color: #3d1647;
+
+  color: white;
+}
+
+
+/* ========================= */
+/* CONTADORES                */
+/* ========================= */
+
+#contadores {
+  width: 100%;
+
+  max-width: 900px;
+
+  margin: 20px auto;
+
+  display: flex;
+
+  justify-content: center;
+
+  align-items: center;
+
+  gap: 12px;
+
+  flex-wrap: wrap;
+}
+
+#contadores span {
+  background: linear-gradient(
+    135deg,
+    #64126e,
+    #8c167f
+  );
+
+  padding: 9px 17px;
+
+  border: 1px solid #a943b8;
+
+  border-radius: 8px;
+
+  color: white;
+
+  font-size: 14px;
+
+  font-weight: bold;
+
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+}
+
+
+/* ========================= */
+/* FORMULÁRIO                */
+/* ========================= */
+
+#formulario {
+  width: 100%;
+
+  max-width: 1100px;
+
+  margin: 20px auto;
+
+  display: flex;
+
+  gap: 10px;
+
+  align-items: center;
+
+  flex-wrap: wrap;
+}
+
+#input-tarefa {
+  flex: 1;
+
+  min-width: 220px;
+
+  padding: 10px 12px;
+
+  border-radius: 7px;
+
+  border: 1px solid #8e2a9e;
+
+  outline: none;
+
+  background-color: #35133d;
+
+  color: white;
+}
+
+#input-tarefa::placeholder {
+  color: #c9a8cc;
+}
+
+#input-tarefa:focus {
+  border-color: #e25bdb;
+
+  box-shadow: 0 0 0 2px rgba(226, 91, 219, 0.15);
+}
+
+#formulario input[type="text"] {
+  padding: 10px 12px;
+
+  border-radius: 7px;
+
+  border: 1px solid #8e2a9e;
+
+  outline: none;
+
+  background-color: #35133d;
+
+  color: white;
+}
+
+#formulario input[type="text"]::placeholder {
+  color: #c9a8cc;
+}
+
+#sel-prioridade {
+  padding: 10px;
+
+  border-radius: 7px;
+
+  border: 1px solid #8e2a9e;
+
+  outline: none;
+
+  background-color: #35133d;
+
+  color: white;
+}
+
+
+/* ========================= */
+/* BOTÃO ADICIONAR           */
+/* ========================= */
+
+.btn-adicionar {
+  padding: 10px 18px;
+
+  border: none;
+
+  border-radius: 7px;
+
+  background: linear-gradient(
+    135deg,
+    #a00998,
+    #c51caf
+  );
+
+  color: white;
+
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition: 0.3s;
+}
+
+.btn-adicionar:hover {
+  background: linear-gradient(
+    135deg,
+    #c51caf,
+    #e02bd0
+  );
+
+  transform: translateY(-1px);
+}
+
+.btn-adicionar:active {
+  transform: scale(0.98);
+}
+
+
+/* ========================= */
+/* CEP                       */
+/* ========================= */
+
+#formulario span {
+  font-size: 13px;
+
+  color: #f0c8f2;
+}
+
+
+/* ========================= */
+/* LISTA ANTIGA              */
+/* ========================= */
+
+#lista-tarefas {
+  list-style: none;
+
+  margin-top: 20px;
+}
+
+
+/* ========================= */
+/* RODAPÉ                    */
+/* ========================= */
+
+footer {
+  width: 100%;
+
+  padding: 16px;
+
+  text-align: center;
+
+  color: #c6a7c9;
+
+  border-top: 1px solid #7d2589;
+
+  margin-top: 30px;
+}
+
+
+/* ========================= */
+/* PÁGINA SOBRE              */
+/* ========================= */
+
+.sobre {
+  padding: 40px;
+
+  max-width: 900px;
+
+  margin: 0 auto;
+}
+
+.sobre h1 {
+  margin-bottom: 20px;
+
+  text-align: center;
+
+  color: #f19af5;
+}
+
+.sobre h2 {
+  margin-top: 30px;
+
+  margin-bottom: 15px;
+
+  color: #e27ce7;
+}
+
+.sobre p {
+  line-height: 1.6;
+
+  margin-bottom: 10px;
+}
+
+.sobre ul {
+  padding-left: 25px;
+}
+
+.sobre li {
+  margin-bottom: 8px;
+}
+
+
+/* ========================= */
+/* LAYOUT DA SIDEBAR         */
+/* ========================= */
+
+.app-layout {
+  min-height: 100vh;
+
+  width: 100%;
+}
+
+.app-conteudo {
+  margin-left: 220px;
+
+  width: calc(100% - 220px);
+
+  min-height: 100vh;
+
+  padding: 0;
+}
+
+
+/* ========================= */
+/* CENTRALIZAÇÃO DO CONTEÚDO */
+/* ========================= */
+
+.app-conteudo main {
+  width: 100%;
+
+  max-width: 1400px;
+
+  margin: 0 auto;
+
+  padding: 25px 35px;
+}
+
+
+/* ========================= */
+/* RESPONSIVO                */
+/* ========================= */
+
+@media (max-width: 1100px) {
+
+  .app-conteudo main {
+    padding: 25px 20px;
+  }
+
+  .kanban {
+    gap: 14px;
+  }
+
+  .kanban-coluna {
+    padding: 12px;
+  }
+
+  .kanban-coluna-header h3 {
+    font-size: 17px;
+  }
+}
+
+
+/* ========================= */
+/* TABLET                    */
+/* ========================= */
+
+@media (max-width: 800px) {
+
+  .app-conteudo {
+    margin-left: 220px;
+
+    width: calc(100% - 220px);
+  }
+
+  .app-conteudo main {
+    padding: 20px 15px;
+  }
+
+  .kanban {
+    grid-template-columns: 1fr;
+  }
+
+  .kanban-coluna {
+    min-height: 250px;
+  }
+
+  #formulario {
+    flex-direction: column;
+
+    align-items: stretch;
+  }
+
+  #input-tarefa,
+  #formulario input[type="text"],
+  #sel-prioridade,
+  .btn-adicionar {
+    width: 100%;
+  }
+
+  .filtro-prioridade {
+    flex-direction: column;
+
+    align-items: stretch;
+  }
+
+  #filtro-prioridade {
+    width: 100%;
+  }
+
+  #contadores {
+    flex-direction: column;
+
+    gap: 8px;
+  }
+
+  #contadores span {
+    width: 100%;
+
+    text-align: center;
+  }
+}
+
+
+/* ========================= */
+/* CELULAR                   */
+/* ========================= */
+
+@media (max-width: 500px) {
+
+  .app-conteudo {
+    margin-left: 0;
+
+    width: 100%;
+  }
+
+  .app-conteudo main {
+    padding: 15px 10px;
+  }
+
+  .kanban-coluna-header h3 {
+    font-size: 16px;
+  }
+
+  .kanban-btn-add {
+    width: 30px;
+
+    height: 30px;
+  }
+
+  .card p {
+    font-size: 14px;
+  }
+
+  .sobre {
+    padding: 25px 15px;
+  }
+}

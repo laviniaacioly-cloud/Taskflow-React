@@ -1,0 +1,207 @@
+/* ========================= */
+/* CONTAINER DO LOGIN        */
+/* ========================= */
+
+.login-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    box-sizing: border-box;
+}
+/* ========================= */
+/* CARD                      */
+/* ========================= */
+
+.login-card {
+    width: 100%;
+    max-width: 400px;
+
+    padding: 40px 36px;
+
+    border: 1px solid #a301c4;
+
+    background-color: rgb(61, 11, 63);
+
+    border-radius: 16px;
+
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 14px;
+}
+
+
+/* ========================= */
+/* LOGO                      */
+/* ========================= */
+
+.login-logo {
+    color: #8803b1;
+
+    font-size: 2rem;
+
+    text-align: center;
+
+    margin: 0;
+}
+
+
+/* ========================= */
+/* SUBTÍTULO                 */
+/* ========================= */
+
+.login-subtitulo {
+    color: #fdfdfd;
+
+    font-size: 0.9rem;
+
+    text-align: center;
+
+    margin: 0 0 10px;
+}
+
+
+/* ========================= */
+/* INPUTS                    */
+/* ========================= */
+
+.login-input {
+    width: 100%;
+
+    background: #5e0170;
+
+    color: #e2e8f0;
+
+    border: 1px solid #a3139c;
+
+    border-radius: 6px;
+
+    padding: 11px 14px;
+
+    font-size: 1rem;
+
+    outline: none;
+
+    box-sizing: border-box;
+}
+
+
+.login-input:focus {
+    border-color: #d871db;
+}
+
+
+/* ========================= */
+/* ERRO                      */
+/* ========================= */
+
+.login-erro {
+    color: #ef4444;
+
+    font-size: 0.9rem;
+
+    text-align: center;
+
+    border: 1px solid #ef4444;
+
+    border-radius: 6px;
+
+    padding: 8px;
+
+    margin: 0;
+}
+
+
+/* ========================= */
+/* BOTÃO                     */
+/* ========================= */
+
+.login-btn {
+    background: #780388;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 12px;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.login-btn:hover {
+    background-color: #a301c4;
+}
+
+.login-btn:active {
+    transform: scale(0.98);
+}
+
+
+/* ========================= */
+/* AVISO                     */
+/* ========================= */
+
+.login-aviso {
+    color: #f2f7ff;
+    font-size: 0.75rem;
+    text-align: center;
+    line-height: 1.4;
+    margin: 5px 0 0;
+}
+
+
+/* ========================= */
+/* ANIMAÇÃO SHAKE             */
+/* ========================= */
+
+.shake {
+    animation: shake 0.5s ease-in-out;
+}
+
+
+@keyframes shake {
+    0% {
+        transform: translateX(0);
+    }
+    20% {
+        transform: translateX(-10px);
+    }
+    40% {
+        transform: translateX(10px);
+    }
+    60% {
+        transform: translateX(-10px);
+    }
+    80% {
+        transform: translateX(10px);
+    }
+    100% {
+        transform: translateX(0);
+    }
+}
+
+
+/* ========================= */
+/* RESPONSIVO                */
+/* ========================= */
+
+@media (max-width: 500px) {
+
+    .login-container {
+        padding: 15px;
+    }
+    .login-card {
+        padding: 30px 24px;
+    }
+    .login-logo {
+        font-size: 1.7rem;
+    }
+}

@@ -1,0 +1,94 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.card {
+  background: #53035c;
+  border: 1px solid #dd0fdd;
+  border-radius: 12px;
+  padding: 28px 32px;
+  width: 100%;
+  max-width: 420px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  box-sizing: border-box;
+}
+
+.card h2 {
+  color: #ddd;
+  font-size: 1.2rem;
+  margin: 0 0 5px;
+}
+
+.card input,
+.card select {
+  width: 100%;
+  box-sizing: border-box;
+  background: #270d2a;
+  color: #e2e8f0;
+  border: 1px solid #8d5e8f;
+  border-radius: 6px;
+  padding: 10px 14px;
+  font-size: 1rem;
+  font-family: inherit;
+  outline: none;
+}
+
+.card input:focus,
+.card select:focus {
+  border-color: #f838e8;
+}
+
+.cidade {
+  color: #a7a9ac;
+  font-size: 0.8rem;
+  margin: -5px 0 0;
+}
+
+.botoes {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 8px;
+}
+
+.botoes button {
+  display: block;
+  padding: 9px 18px;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-family: inherit;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.botoes button:first-child {
+  background: transparent;
+  border: 1px solid #a514aa;
+  color: #94a3b8;
+}
+
+.botoes button:first-child:hover {
+  background: #ec1124;
+  color: white;
+}
+
+.botoes button:last-child {
+  background: #a30481;
+  color: white;
+  border: none;
+  font-weight: 700;
+}
+
+.botoes button:last-child:hover {
+  background: #86227e;
+}
+
