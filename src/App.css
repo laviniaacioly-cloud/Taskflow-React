@@ -782,3 +782,29 @@ footer {
     padding: 25px 15px;
   }
 }
+
+.filtro-prioridade {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 15px 0 20px;
+}
+
+.filtro-prioridade select {
+  padding: 8px 12px;
+  border: 1px solid #550255;
+  border-radius: 6px;
+  background-color: rgb(166, 83, 173);
+  color: #f0c8f2;
+  font-size: 14px;
+  cursor: pointer;
+  outline: none;
+  transition: 0.2s;
+}
+
+
+.filtro-prioridade label {
+  font-size: 15px;
+  font-weight: 600;
+  color: #f0c8f2;
+}

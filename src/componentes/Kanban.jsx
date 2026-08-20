@@ -2,29 +2,31 @@
 import { useEffect, useState } from "react";
 import Header from "./Header";
 import axios from "axios";
-
 import ModalTarefa from "./ModalTarefa";
 import ListaTarefas from "./ListaTarefas";
+
+const URL_API = "https://6a85ab769c451dc67a63ee5b.mockapi.io/tarefas";
 
 function Kanban() {
   // ==========================================
   // TAREFAS
   // ==========================================
 
-  const [tarefas, setTarefas] = useState(() => {
-    const salvo = localStorage.getItem("TaskFlow.tarefas");
+  const [tarefas, setTarefas] = useState([]);
 
-    return salvo ? JSON.parse(salvo) : [];
-  });
+  // ==========================================
+  // CARREGAMENTO E ERROS
+  // ==========================================
+
+  const [carregando, setCarregando] = useState(false);
+  const [erro, setErro] = useState("");
 
   // ==========================================
   // MODAL
   // ==========================================
 
   const [modalAberto, setModalAberto] = useState(false);
-
   const [tarefaEditando, setTarefaEditando] = useState(null);
-
   const [colunaAtiva, setColunaAtiva] = useState("afazer");
 
   // ==========================================
@@ -32,7 +34,6 @@ function Kanban() {
   // ==========================================
 
   const [texto, setTexto] = useState("");
-
   const [prioridade, setPrioridade] = useState("media");
 
   // ==========================================
@@ -40,11 +41,8 @@ function Kanban() {
   // ==========================================
 
   const [cep, setCep] = useState("");
-
   const [cidade, setCidade] = useState("");
-
   const [buscandoCep, setBuscandoCep] = useState(false);
-
   const [erroCep, setErroCep] = useState("");
 
   // ==========================================
@@ -54,12 +52,25 @@ function Kanban() {
   const [filtroPrioridade, setFiltroPrioridade] = useState("todas");
 
   // ==========================================
-  // SALVAR NO LOCALSTORAGE
+  // CARREGAR TAREFAS API
   // ==========================================
 
   useEffect(() => {
-    localStorage.setItem("TaskFlow.tarefas", JSON.stringify(tarefas));
-  }, [tarefas]);
+    setCarregando(true);
+    setErro("");
+
+    axios
+      .get("https://6a85ab769c451dc67a63ee5b.mockapi.io/tarefas")
+      .then((resposta) => {
+        setTarefas(resposta.data);
+      })
+      .catch((erro) => {
+        console.error("Erro ao carregar tarefas", erro);
+      })
+      .finally(() => {
+        setCarregando(false);
+      });
+  }, []);
 
   // ==========================================
   // TÍTULO DA ABA
@@ -87,9 +98,7 @@ function Kanban() {
 
   function abrirModalCriar(coluna) {
     setTarefaEditando(null);
-
     setColunaAtiva(coluna);
-
     setModalAberto(true);
   }
 
@@ -99,58 +108,60 @@ function Kanban() {
 
   function abrirModalEditar(tarefa) {
     setTarefaEditando(tarefa);
-
     setColunaAtiva(tarefa.coluna);
-
     setModalAberto(true);
   }
 
   // ==========================================
-  // SALVAR TAREFA DO MODAL
+  // SALVAR TAREFA DO MODAL -editar tarefa
   // ==========================================
-
-  function salvarTarefa(dados) {
-    if (dados.id) {
-      // EDITAR
-      setTarefas(
-        tarefas.map((tarefa) =>
-          tarefa.id === dados.id
-            ? {
-                ...tarefa,
-                ...dados,
-              }
-            : tarefa,
-        ),
-      );
-    } else {
-      // CRIAR
-      setTarefas([
-        ...tarefas,
-        {
-          ...dados,
-          id: Date.now(),
-          concluida: dados.coluna === "concluido",
-        },
-      ]);
+  async function salvarTarefa(dados) {
+    try {
+      if (dados.id !== undefined) {
+        // EDITAR — PUT com o id na URL
+        const { data: tarefaEditada } = await axios.put(URL_API + '/' + dados.id,
+          {
+            texto:      dados.texto,
+            prioridade: dados.prioridade,
+            cidade:     dados.cidade,
+            coluna:     dados.coluna,
+          }
+        );
+        // Atualizar a tarefa no estado local
+        setTarefas(tarefasAtuais => tarefasAtuais.map(t => t.id === dados.id ? tarefaEditada : t));
+      } else {
+        // CRIAR — POST (slide anterior)
+        const { data: novaTarefa } = await axios.post(URL_API, dados);
+        setTarefas(tarefasAtuais => [...tarefasAtuais, novaTarefa]);
+      }
+    } catch (e) {
+      setErro('Erro ao salvar tarefa.');
+      console.error(e);
     }
-
-    setModalAberto(false);
-
-    setTarefaEditando(null);
   }
+
 
   // ==========================================
   // EXCLUIR TAREFA
   // ==========================================
 
-  function deletarTarefa(id) {
+  async function deletarTarefa(id) {
     const confirmado = window.confirm(
-      "Tem certeza que deseja deletar esta tarefa?",
+      "Tem certeza que deseja deletar essa tarefa?",
     );
-
     if (!confirmado) return;
 
-    setTarefas(tarefas.filter((tarefa) => tarefa.id !== id));
+    try {
+      await axios.delete(
+        "https://6a85ab769c451dc67a63ee5b.mockapi.io/tarefas" + "/" + id,
+      );
+
+      setTarefas((tarefasAtuais) =>
+        tarefasAtuais.filter((tarefa) => tarefa.id !== id),
+      );
+    } catch (erro) {
+      setErro("Erro ao deletar tarefa. Tent novamente.");
+    }
   }
 
   // ==========================================
@@ -174,29 +185,33 @@ function Kanban() {
   // MOVER TAREFA
   // ==========================================
 
-  function moverTarefa(id, novaColuna) {
-    setTarefas(
-      tarefas.map((tarefa) =>
-        tarefa.id === id
-          ? {
-              ...tarefa,
-              coluna: novaColuna,
-              concluida: novaColuna === "concluido",
-            }
-          : tarefa,
-      ),
-    );
-  }
+  async function moverTarefa(id, novaColuna) {
+    try {
+      // PATCH atualiza apenas os campos enviados
+      // Ideal para mover tarefa — só o campo coluna muda
 
+      const { data: tarefaMovida } = await axios.put(URL_API + "/" + id, {
+        coluna: novaColuna,
+      });
+
+      // Atualizar o estado local com a tarefa retornada
+      setTarefas((tarefasAtuais) =>
+        tarefasAtuais.map((tarefa) =>
+          tarefa.id === id ? tarefaMovida : tarefa,
+        ),
+      );
+    } catch (erro) {
+      setErro("Erro ao mover tarefa. Tente novamente.");
+    }
+  }
   // ==========================================
   // ADICIONAR PELO FORMULÁRIO ANTIGO
   // ==========================================
 
-  function adicionarTarefa() {
+  async function adicionarTarefa() {
     if (texto.trim() === "") return;
 
     const novaTarefa = {
-      id: Date.now(),
       texto: texto.trim(),
       cep,
       cidade,
@@ -205,15 +220,23 @@ function Kanban() {
       concluida: false,
     };
 
-    setTarefas([...tarefas, novaTarefa]);
+    try {
+      const resposta = await axios.post(
+        "https://6a85ab769c451dc67a63ee5b.mockapi.io/tarefas",
+        novaTarefa,
+      );
 
-    setTexto("");
-    setCep("");
-    setCidade("");
-    setPrioridade("media");
-    setErroCep("");
+      setTarefas([...tarefas, resposta.data]);
+
+      setTexto("");
+      setCep("");
+      setCidade("");
+      setPrioridade("media");
+      setErroCep("");
+    } catch (erro) {
+      console.error("Erro ao criar tarefa:", erro);
+    }
   }
-
   // ==========================================
   // CONSULTAR CEP
   // ==========================================
@@ -298,17 +321,14 @@ function Kanban() {
       <Header titulo="TaskFlow" subtitulo="Gerencie suas tarefas" />
 
       <main>
-        {/* ==================================
-            CONTADORES
-        ================================== */}
-
-        {/* <section id="contadores">
-          <span>Total: {totalTarefas}</span>
-
-          <span>Pendentes: {tarefasPendentes}</span>
-
-          <span>Concluídas: {tarefasConcluidas}</span>
-        </section> */}
+        {carregando && (
+          <p style={{ textAlign: "center", color: "#94A3B8" }}>
+            Carregando tarefas...
+          </p>
+        )}
+        {erro && (
+          <p style={{ textAlign: "center", color: "#EF4444" }}>{erro}</p>
+        )}
 
         <div className="filtro-prioridade">
           <label>Filtrar por prioridade:</label>
@@ -334,7 +354,7 @@ function Kanban() {
 
           <div className="kanban-coluna">
             <div className="kanban-coluna-header">
-              <h3>A Fazer</h3>        
+              <h3>A Fazer</h3>
 
               <div className="kanban-header-acoes">
                 <span className="kanban-contador">{quantidadeAFazer}</span>
