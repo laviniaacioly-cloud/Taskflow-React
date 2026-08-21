@@ -392,7 +392,7 @@ function Kanban() {
               <div className="kanban-header-acoes">
                 <span className="kanban-contador">
                   {
-                    tarefas.filter((tarefa) => tarefa.coluna === "afazer")
+                    tarefas.filter((tarefa) => tarefa.coluna === "andamento")
                       .length
                   }
                 </span>
