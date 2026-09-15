@@ -5,31 +5,32 @@ import Login from "./Pages/Login";
 import Sidebar from "./componentes/Sidebar";
 import RotaPrivada from "./componentes/RotaPrivada";
 import Kanban from "./componentes/Kanban";
+import { useAuth } from "./Contexts/AuthContext";
 
 function App() {
+  const { token } = useAuth();
+
   return (
     <div className="app-layout">
-      <Sidebar />
+      {token && <Sidebar />}
 
-      <main className="app-conteudo">
+      <main
+        className="app-conteudo"
+        style={{ marginLeft: token ? "220px" : "0" }}
+      >
         <Routes>
-
           <Route
             path="/"
             element={
               <RotaPrivada>
-                <Kanban/>
+                <Kanban />
               </RotaPrivada>
             }
           />
 
           <Route path="/sobre" element={<Sobre />} />
           <Route path="/login" element={<Login />} />
-          <Route
-            path="*"
-            element={<h1>Página não encontrada</h1>}
-          />
-
+          <Route path="*" element={<h1>Página não encontrada</h1>} />
         </Routes>
       </main>
     </div>
