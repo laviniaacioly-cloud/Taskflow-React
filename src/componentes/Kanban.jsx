@@ -1,7 +1,8 @@
 //ok!!!
 import { useEffect, useState } from "react";
 import Header from "./Header";
-import axios from "axios";
+import axios from "axios"
+import api from "../api";
 import ModalTarefa from "./ModalTarefa";
 import ListaTarefas from "./ListaTarefas";
 
@@ -56,20 +57,21 @@ function Kanban() {
   // ==========================================
 
   useEffect(() => {
-    setCarregando(true);
-    setErro("");
+    async function carregarTarefas() {
+      setCarregando(true);
+      setErro("");
 
-    axios
-      .get("https://6a85ab769c451dc67a63ee5b.mockapi.io/tarefas")
-      .then((resposta) => {
+      try {
+        const resposta = await api.get("/tarefas");
         setTarefas(resposta.data);
-      })
-      .catch((erro) => {
-        console.error("Erro ao carregar tarefas", erro);
-      })
-      .finally(() => {
+      } catch (e) {
+        setErro("Erro ao carregar tarefas. Verifique a conexão.");
+        console.error(e);
+      } finally {
         setCarregando(false);
-      });
+      }
+    }
+    carregarTarefas();
   }, []);
 
   // ==========================================
@@ -119,27 +121,29 @@ function Kanban() {
     try {
       if (dados.id !== undefined) {
         // EDITAR — PUT com o id na URL
-        const { data: tarefaEditada } = await axios.put(URL_API + '/' + dados.id,
+        const { data: tarefaEditada } = await axios.put(
+          URL_API + "/" + dados.id,
           {
-            texto:      dados.texto,
+            texto: dados.texto,
             prioridade: dados.prioridade,
-            cidade:     dados.cidade,
-            coluna:     dados.coluna,
-          }
+            cidade: dados.cidade,
+            coluna: dados.coluna,
+          },
         );
         // Atualizar a tarefa no estado local
-        setTarefas(tarefasAtuais => tarefasAtuais.map(t => t.id === dados.id ? tarefaEditada : t));
+        setTarefas((tarefasAtuais) =>
+          tarefasAtuais.map((t) => (t.id === dados.id ? tarefaEditada : t)),
+        );
       } else {
         // CRIAR — POST (slide anterior)
         const { data: novaTarefa } = await axios.post(URL_API, dados);
-        setTarefas(tarefasAtuais => [...tarefasAtuais, novaTarefa]);
+        setTarefas((tarefasAtuais) => [...tarefasAtuais, novaTarefa]);
       }
     } catch (e) {
-      setErro('Erro ao salvar tarefa.');
+      setErro("Erro ao salvar tarefa.");
       console.error(e);
     }
   }
-
 
   // ==========================================
   // EXCLUIR TAREFA
@@ -390,8 +394,7 @@ function Kanban() {
               <h3>Em Andamento</h3>
 
               <div className="kanban-header-acoes">
-                <span className="kanban-contador">
-                </span>
+                <span className="kanban-contador"></span>
 
                 <button
                   className="kanban-btn-add"
@@ -467,7 +470,7 @@ function Kanban() {
       ================================== */}
 
       <footer>
-        <p>TaskFlow 2026 - Prof. Alan Glei</p>
+        <p>TaskFlow 2026 - Lavínia D Acioly</p>
       </footer>
     </div>
   );
