@@ -23,21 +23,20 @@ function Login() {
       });
 
       const { token, usuario } = resposta.data;
-
       login(usuario, token);
       navigate("/");
     } catch (err) {
       setErro(err.response?.data?.erro || "Erro ao fazer login");
 
-      setShake(false);
+      setShake(true);
 
-      setTimeout(() => {
-        setShake(true);
-      }, 10);
+      // setTimeout(() => {
+      //   setShake();
+      // }, 10);
 
       setTimeout(() => {
         setShake(false);
-      }, 510);
+      }, 500);
     }
   }
 

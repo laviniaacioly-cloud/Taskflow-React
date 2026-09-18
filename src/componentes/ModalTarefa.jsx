@@ -52,25 +52,30 @@ function ModalTarefa({
     };
   }, [aberto, onFechar]);
 
-
   // CONSULTAR CEP
 
   async function consultarCidade(cepDigitado) {
-    if (cepDigitado.trim().length < 8) return;
+    const cepLimpo = cepDigitado.replace(/\D/g, "");
 
+    if (cepLimpo.length !== 8) {
+      if (cepLimpo.length === 0) setCidade("");
+      return;
+    }
     try {
       const { data } = await axios.get(
         `https://viacep.com.br/ws/${cepDigitado}/json/`,
       );
 
       if (!data.erro) {
-        setCidade(data.localidade + "/" + data.uf);
+        setCidade(`${data.localidade}/${data.uf}`);
+      } else {
+        setCidade("");
       }
     } catch (e) {
-      console.log("Erro ao consultar CEP", e);
+      console.error("Erro ao consultar CEP", e);
+      setCidade("");
     }
   }
-
 
   // SALVAR
 
@@ -90,31 +95,18 @@ function ModalTarefa({
   }
 
   // MODAL FECHADO
-  
   if (!aberto) return null;
 
   // MODAL
-
   return (
-    <div
-      className={styles.overlay}
-      onClick={onFechar}
-    >
-      <div
-        className={styles.card}
-        onClick={(e) => e.stopPropagation()}
-      >
-
-        <h2>
-          {tarefa ? "Editar tarefa" : "Nova tarefa"}
-        </h2>
+    <div className={styles.overlay} onClick={onFechar}>
+      <div className={styles.card} onClick={(e) => e.stopPropagation()}>
+        <h2>{tarefa ? "Editar tarefa" : "Nova tarefa"}</h2>
 
         <input
           placeholder="Texto da tarefa"
           value={texto}
-          onChange={(e) =>
-            setTexto(e.target.value)
-          }
+          onChange={(e) => setTexto(e.target.value)}
         />
 
         <input
@@ -126,46 +118,23 @@ function ModalTarefa({
           }}
         />
 
-        {cidade && (
-          <p className={styles.cidade}>
-            {cidade}
-          </p>
-        )}
+        {cidade && <p className={styles.cidade}>{cidade}</p>}
 
         <select
           value={prioridade}
-          onChange={(e) =>
-            setPrioridade(e.target.value)
-          }
+          onChange={(e) => setPrioridade(e.target.value)}
         >
-          <option value="alta">
-            Alta
-          </option>
-
-          <option value="media">
-            Média
-          </option>
-
-          <option value="baixa">
-            Baixa
-          </option>
+          <option value="alta">Alta</option>
+          <option value="media">Média</option>
+          <option value="baixa">Baixa</option>
         </select>
 
         <div className={styles.botoes}>
-
-          <button onClick={onFechar}>
-            Cancelar
-          </button>
-
-          <button onClick={handleSalvar}>
-            Salvar
-          </button>
-
+          <button onClick={onFechar}>Cancelar</button>
+          <button onClick={handleSalvar}>Salvar</button>
         </div>
-
       </div>
     </div>
   );
 }
-
 export default ModalTarefa;
