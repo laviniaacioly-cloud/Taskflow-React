@@ -50,7 +50,6 @@ function Kanban() {
 
   useEffect(() => {
     async function carregarTarefas() {
-
       try {
         setCarregando(true);
         setErro("");
@@ -127,24 +126,17 @@ function Kanban() {
         setErro("Erro ao editar tarefa");
       }
     }
-
+  
     // ==========================================
     // EXCLUIR TAREFA
     // ==========================================
 
     async function deletarTarefa(id) {
-      const confirmado = window.confirm(
-        "Tem certeza que deseja deletar essa tarefa?",
-      );
-      if (!confirmado) return;
-
       try {
         await api.delete(`/tarefas/${id}`);
-        setTarefas((tarefasAtuais) =>
-          tarefasAtuais.filter((tarefa) => tarefa.id !== id),
-        );
-      } catch (erro) {
-        setErro("Erro ao deletar tarefa. Tent novamente.");
+        setTarefas(tarefas.filter((t) => t.id !== id));
+      } catch (err) {
+        setErro("Erro ao deletar tarefa.");
       }
     }
 
@@ -152,18 +144,18 @@ function Kanban() {
     // CONCLUIR TAREFA
     // ==========================================
 
-    function concluirTarefa(id) {
-      setTarefas(
-        tarefas.map((tarefa) =>
-          tarefa.id === id
-            ? {
-                ...tarefa,
-                concluida: !tarefa.concluida,
-              }
-            : tarefa,
-        ),
-      );
-    }
+    // function concluirTarefa(id) {
+    //   setTarefas(
+    //     tarefas.map((tarefa) =>
+    //       tarefa.id === id
+    //         ? {
+    //             ...tarefa,
+    //             concluida: !tarefa.concluida,
+    //           }
+    //         : tarefa,
+    //     ),
+    //   );
+    // }
 
     // ==========================================
     // MOVER TAREFA
@@ -191,33 +183,33 @@ function Kanban() {
     // CONSULTAR CEP
     // ==========================================
 
-    async function buscarCep(cepDigitado) {
-      const cepLimpo = cepDigitado.replace(/\D/g, "");
+    // async function buscarCep(cepDigitado) {
+    //   const cepLimpo = cepDigitado.replace(/\D/g, "");
 
-      if (cepLimpo.length !== 8) {
-        setCidade("");
-        setErroCep("");
-        return;
-      }
-      setBuscandoCep(true);
-      setErroCep("");
+    //   if (cepLimpo.length !== 8) {
+    //     setCidade("");
+    //     setErroCep("");
+    //     return;
+    //   }
+    //   setBuscandoCep(true);
+    //   setErroCep("");
 
-      try {
-        const resposta = await axios.get(
-          `https://viacep.com.br/ws/${cepLimpo}/json/`,
-        );
-        const data = resposta.data;
-        if (data.erro) {
-          throw new Error("CEP não encontrado");
-        }
-        setCidade(`${data.localidade}/${data.uf}`);
-      } catch {
-        setCidade("");
-        setErroCep("CEP inválido ou não encontrado");
-      } finally {
-        setBuscandoCep(false);
-      }
-    }
+    //   try {
+    //     const resposta = await axios.get(
+    //       `https://viacep.com.br/ws/${cepLimpo}/json/`,
+    //     );
+    //     const data = resposta.data;
+    //     if (data.erro) {
+    //       throw new Error("CEP não encontrado");
+    //     }
+    //     setCidade(`${data.localidade}/${data.uf}`);
+    //   } catch {
+    //     setCidade("");
+    //     setErroCep("CEP inválido ou não encontrado");
+    //   } finally {
+    //     setBuscandoCep(false);
+    //   }
+    // }
 
     // ==========================================
     // FILTRO
