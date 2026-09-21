@@ -30,10 +30,6 @@ function Login() {
 
       setShake(true);
 
-      // setTimeout(() => {
-      //   setShake();
-      // }, 10);
-
       setTimeout(() => {
         setShake(false);
       }, 500);
@@ -61,11 +57,7 @@ function Login() {
           placeholder="Senha"
           value={senha}
           onChange={(e) => setSenha(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              handleLogin();
-            }
-          }}
+          onKeyDown={(e) => e.key === "Enter" && handleLogin()}
         />
 
         {erro && <p className="login-erro">{erro}</p>}
