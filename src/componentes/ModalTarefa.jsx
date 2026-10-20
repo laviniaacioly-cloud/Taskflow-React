@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import styles from "./ModalTarefa.module.css";
-import axios from "axios";
+import { mensagensDeErro } from "../api";
 
 function ModalTarefa({
   aberto,
@@ -8,11 +8,16 @@ function ModalTarefa({
   onSalvar,
   tarefa = null,
   coluna = "afazer",
+  prioridades = [],
+  usuarios = [],
+  projetos = [],
 }) {
   const [texto, setTexto] = useState("");
-  const [cep, setCep] = useState("");
-  const [cidade, setCidade] = useState("");
   const [prioridade, setPrioridade] = useState("media");
+  const [usuarioId, setUsuarioId] = useState("");
+  const [projetoId, setProjetoId] = useState("");
+  const [erros, setErros] = useState([]);
+  const [salvando, setSalvando] = useState(false);
 
   // PREENCHER O MODAL
 
@@ -20,13 +25,14 @@ function ModalTarefa({
     if (aberto) {
       if (tarefa) {
         setTexto(tarefa.texto || "");
-        setCidade(tarefa.cidade || "");
         setPrioridade(tarefa.prioridade || "media");
+        setUsuarioId(tarefa.usuario_id ?? tarefa.usuarioId ?? "");
+        setProjetoId(tarefa.projeto_id ?? tarefa.projetoId ?? "");
       } else {
         setTexto("");
-        setCep("");
-        setCidade("");
         setPrioridade("media");
+        setUsuarioId("");
+        setProjetoId("");
       }
     }
   }, [tarefa, aberto]);
@@ -52,46 +58,28 @@ function ModalTarefa({
     };
   }, [aberto, onFechar]);
 
-  // CONSULTAR CEP
-
-  async function consultarCidade(cepDigitado) {
-    const cepLimpo = cepDigitado.replace(/\D/g, "");
-
-    if (cepLimpo.length !== 8) {
-      if (cepLimpo.length === 0) setCidade("");
-      return;
-    }
-    try {
-      const { data } = await axios.get(
-        `https://viacep.com.br/ws/${cepDigitado}/json/`,
-      );
-
-      if (!data.erro) {
-        setCidade(`${data.localidade}/${data.uf}`);
-      } else {
-        setCidade("");
-      }
-    } catch (e) {
-      console.error("Erro ao consultar CEP", e);
-      setCidade("");
-    }
-  }
-
   // SALVAR
 
-  function handleSalvar() {
-    if (texto.trim() === "") return;
+  async function handleSalvar() {
+    setErros([]);
+    setSalvando(true);
 
-    onSalvar({
-      id: tarefa?.id,
-      texto,
-      cep,
-      cidade,
-      prioridade,
-      coluna: tarefa?.coluna || coluna,
-    });
+    try {
+      await onSalvar({
+        id: tarefa?.id,
+        texto,
+        prioridade,
+        usuarioId: Number(usuarioId),
+        projetoId: Number(projetoId),
+        coluna: tarefa?.coluna || coluna,
+      });
 
-    onFechar();
+      onFechar();
+    } catch (e) {
+      setErros(mensagensDeErro(e));
+    } finally {
+      setSalvando(false);
+    }
   }
 
   // MODAL FECHADO
@@ -109,17 +97,6 @@ function ModalTarefa({
           onChange={(e) => setTexto(e.target.value)}
         />
 
-        <input
-          placeholder="CEP (opcional)"
-          value={cep}
-          onChange={(e) => {
-            setCep(e.target.value);
-            consultarCidade(e.target.value);
-          }}
-        />
-
-        {cidade && <p className={styles.cidade}>{cidade}</p>}
-
         <select
           value={prioridade}
           onChange={(e) => setPrioridade(e.target.value)}
@@ -129,9 +106,52 @@ function ModalTarefa({
           <option value="baixa">Baixa</option>
         </select>
 
+        <label>
+          Usuário responsável
+          <select
+            value={usuarioId}
+            onChange={(e) => setUsuarioId(e.target.value)}
+          >
+            <option value="">Selecione um usuário</option>
+            {usuarios.map((usuario) => (
+              <option key={usuario.id} value={usuario.id}>
+                {usuario.nome}
+              </option>
+            ))}
+          </select>
+        </label>
+
+        <label>
+          Projeto
+          <select
+            value={projetoId}
+            onChange={(e) => setProjetoId(e.target.value)}
+          >
+            <option value="">Selecione um projeto</option>
+            {projetos.map((projeto) => (
+              <option key={projeto.id} value={projeto.id}>
+                {projeto.nome}
+              </option>
+            ))}
+          </select>
+        </label>
+
+        {erros.length > 0 && (
+          <ul className={styles.erros}>
+            {erros.map((mensagem, i) => (
+              <li key={i}>{mensagem}</li>
+            ))}
+          </ul>
+        )}
+
         <div className={styles.botoes}>
-          <button onClick={onFechar}>Cancelar</button>
-          <button onClick={handleSalvar}>Salvar</button>
+          <button onClick={onFechar} disabled={salvando}>
+            Cancelar
+          </button>
+
+          <button onClick={handleSalvar} disabled={salvando}>
+            {salvando ? "Salvando..." : "Salvar"}
+          </button>
         </div>
       </div>
     </div>

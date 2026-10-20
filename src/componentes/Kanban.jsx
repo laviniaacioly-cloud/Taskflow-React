@@ -13,6 +13,9 @@ function Kanban() {
   const [tarefas, setTarefas] = useState([]);
   const [carregando, setCarregando] = useState(false);
   const [erro, setErro] = useState("");
+  const [prioridades, setPrioridades] = useState([]);
+  const [usuarios, setUsuarios] = useState([]);
+  const [projetos, setProjetos] = useState([]);
 
   // ==========================================
   // MODAL
@@ -49,21 +52,32 @@ function Kanban() {
   // ==========================================
 
   useEffect(() => {
-    async function carregarTarefas() {
+    async function carregarDados() {
       try {
         setCarregando(true);
         setErro("");
 
-        const resposta = await api.get("/tarefas");
-        setTarefas(resposta.data);
+        const [resTarefas, resPrioridades, resUsuarios, resProjetos] =
+          await Promise.all([
+            api.get("/tarefas"),
+            api.get("/prioridades"),
+            api.get("/usuarios"),
+            api.get("/projetos"),
+          ]);
+
+        setTarefas(resTarefas.data);
+        setPrioridades(resPrioridades.data);
+        setUsuarios(resUsuarios.data);
+        setProjetos(resProjetos.data);
       } catch (e) {
-        setErro("Erro ao carregar tarefas. Verifique a conexão.");
-        console.error(e);
+        setErro("Erro ao carregar os dados. Verifique a conexão com a API.");
+        console.error("Erro ao carregar dados:", e);
       } finally {
         setCarregando(false);
       }
     }
-    carregarTarefas();
+
+    carregarDados();
   }, []);
 
   // ==========================================
@@ -393,13 +407,15 @@ function Kanban() {
         {/* ==================================
           MODAL
       ================================== */}
-
         <ModalTarefa
           aberto={modalAberto}
           onFechar={() => setModalAberto(false)}
           onSalvar={salvarTarefa}
           tarefa={tarefaEditando}
           coluna={colunaAtiva}
+          prioridades={prioridades}
+          usuarios={usuarios}
+          projetos={projetos}
         />
       </main>
 
