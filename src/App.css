@@ -808,3 +808,12 @@ footer {
   font-weight: 600;
   color: #f0c8f2;
 }
+
+.detalhes-tarefa {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 8px;
+  font-size: 12px;
+  opacity: 0.85;
+}

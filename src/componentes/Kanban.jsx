@@ -1,7 +1,7 @@
 //ok!!!
 import { useEffect, useState } from "react";
 import Header from "./Header";
-import api from "../api";
+import api, { mensagensDeErro } from "../api";
 import ModalTarefa from "./ModalTarefa";
 import ListaTarefas from "./ListaTarefas";
 
@@ -31,16 +31,6 @@ function Kanban() {
 
   // const [prioridade, setPrioridade] = useState("media");
 
-  // // ==========================================
-  // // CEP
-  // // ==========================================
-
-  // const [texto, setTexto] = useState("");
-  // const [cep, setCep] = useState("");
-  // const [cidade, setCidade] = useState("");
-  // const [buscandoCep, setBuscandoCep] = useState(false);
-  // const [erroCep, setErroCep] = useState("");
-
   // ==========================================
   // FILTRO
   // ==========================================
@@ -65,8 +55,8 @@ function Kanban() {
             api.get("/projetos"),
           ]);
 
-        setTarefas(resTarefas.data);
         setPrioridades(resPrioridades.data);
+        setTarefas(resTarefas.data);
         setUsuarios(resUsuarios.data);
         setProjetos(resProjetos.data);
       } catch (e) {
@@ -123,34 +113,44 @@ function Kanban() {
   // ==========================================
   // SALVAR TAREFA DO MODAL -editar tarefa
   // ==========================================
+
   async function salvarTarefa(dados) {
-    if (dados.id === undefined) {
-      try {
-        // EDITAR — PUT
-        const resposta = await api.post(`/tarefas`, dados);
-        setTarefas([...tarefas, resposta.data]);
-      } catch (err) {
-        setErro("Erro ao salvar tarefa. Tente novamente.");
-      }
-    } else {
-      try {
+    try {
+      setErro("");
+
+      if (dados.id) {
         const resposta = await api.put(`/tarefas/${dados.id}`, dados);
-        setTarefas(tarefas.map((t) => (t.id === dados.id ? resposta.data : t)));
-      } catch (err) {
-        setErro("Erro ao editar tarefa");
+
+        setTarefas((tarefasAtuais) =>
+          tarefasAtuais.map((t) => (t.id === dados.id ? resposta.data : t)),
+        );
+      } else {
+        const resposta = await api.post("/tarefas", dados);
+
+        setTarefas((tarefasAtuais) => [...tarefasAtuais, resposta.data]);
       }
+    } catch (err) {
+      const mensagens = mensagensDeErro(err);
+      setErro(mensagens.join(" "));
+      console.error("Erro ao salvar tarefa:", err);
     }
   }
+
   // ==========================================
   // EXCLUIR TAREFA
   // ==========================================
 
   async function deletarTarefa(id) {
     try {
+      setErro("");
+
       await api.delete(`/tarefas/${id}`);
-      setTarefas(tarefas.filter((t) => t.id !== id));
+
+      setTarefas((tarefasAtuais) => tarefasAtuais.filter((t) => t.id !== id));
     } catch (err) {
-      setErro("Erro ao deletar tarefa.");
+      const mensagens = mensagensDeErro(err);
+      setErro(mensagens.join(" "));
+      console.error("Erro ao deletar tarefa:", err);
     }
   }
 
@@ -177,56 +177,24 @@ function Kanban() {
 
   async function moverTarefa(id, novaColuna) {
     try {
+      setErro("");
+
       const tarefa = tarefas.find((t) => t.id === id);
 
       if (!tarefa) return;
 
       const resposta = await api.put(`/tarefas/${id}`, {
-        texto: tarefa.texto,
-        prioridade: tarefa.prioridade,
-        concluida: tarefa.concluida,
+        ...tarefa,
         coluna: novaColuna,
       });
-      // const resposta = await api.put(
-      //    `/tarefas/${id}`,
-      //   { coluna: novaColuna }
-      // );
 
-      setTarefas(tarefas.map((t) => (t.id === id ? resposta.data : t)));
-    } catch (err) {
-      setErro("Erro ao mover tarefa. Tente novamente.");
-    }
-  }
-
-  // ==========================================
-  // CONSULTAR CEP
-  // ==========================================
-
-  async function buscarCep(cepDigitado) {
-    const cepLimpo = cepDigitado.replace(/\D/g, "");
-
-    if (cepLimpo.length !== 8) {
-      setCidade("");
-      setErroCep("");
-      return;
-    }
-    setBuscandoCep(true);
-    setErroCep("");
-
-    try {
-      const resposta = await axios.get(
-        `https://viacep.com.br/ws/${cepLimpo}/json/`,
+      setTarefas((tarefasAtuais) =>
+        tarefasAtuais.map((t) => (t.id === id ? resposta.data : t)),
       );
-      const data = resposta.data;
-      if (data.erro) {
-        throw new Error("CEP não encontrado");
-      }
-      setCidade(`${data.localidade}/${data.uf}`);
-    } catch {
-      setCidade("");
-      setErroCep("CEP inválido ou não encontrado");
-    } finally {
-      setBuscandoCep(false);
+    } catch (err) {
+      const mensagens = mensagensDeErro(err);
+      setErro(mensagens.join(" "));
+      console.error("Erro ao mover tarefa:", err);
     }
   }
 
@@ -239,7 +207,11 @@ function Kanban() {
       return true;
     }
 
-    return tarefa.prioridade === filtroPrioridade;
+    const prioridadeTarefa = prioridades.find(
+      (p) => p.id === tarefa.prioridade_id,
+    );
+
+    return prioridadeTarefa?.descricao === filtroPrioridade;
   });
 
   // ==========================================
@@ -328,6 +300,9 @@ function Kanban() {
               tarefas={tarefasFiltradas.filter(
                 (tarefa) => tarefa.coluna === "afazer",
               )}
+              prioridades={prioridades}
+              usuarios={usuarios}
+              projetos={projetos}
               onDeletar={deletarTarefa}
               onConcluir={concluirTarefa}
               onEditar={abrirModalEditar}
@@ -346,7 +321,7 @@ function Kanban() {
               <h3>Em Andamento</h3>
 
               <div className="kanban-header-acoes">
-                <span className="kanban-contador"></span>
+                <span className="kanban-contador">{quantidadeAndamento}</span>
 
                 <button
                   className="kanban-btn-add"
@@ -361,6 +336,9 @@ function Kanban() {
               tarefas={tarefasFiltradas.filter(
                 (tarefa) => tarefa.coluna === "andamento",
               )}
+              prioridades={prioridades}
+              usuarios={usuarios}
+              projetos={projetos}
               onDeletar={deletarTarefa}
               onConcluir={concluirTarefa}
               onEditar={abrirModalEditar}
@@ -394,6 +372,9 @@ function Kanban() {
               tarefas={tarefasFiltradas.filter(
                 (tarefa) => tarefa.coluna === "concluido",
               )}
+              prioridades={prioridades}
+              usuarios={usuarios}
+              projetos={projetos}
               onDeletar={deletarTarefa}
               onConcluir={concluirTarefa}
               onEditar={abrirModalEditar}

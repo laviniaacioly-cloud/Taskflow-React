@@ -1,6 +1,13 @@
+
 import { useState, useEffect } from "react";
 import styles from "./ModalTarefa.module.css";
 import { mensagensDeErro } from "../api";
+
+// Converte o valor do select para número.
+// Se estiver vazio, retorna null.
+function paraNumero(valor) {
+  return valor !== "" && valor != null ? Number(valor) : null;
+}
 
 function ModalTarefa({
   aberto,
@@ -13,65 +20,68 @@ function ModalTarefa({
   projetos = [],
 }) {
   const [texto, setTexto] = useState("");
-  const [prioridade, setPrioridade] = useState("media");
+  const [prioridadeId, setPrioridadeId] = useState(2);
   const [usuarioId, setUsuarioId] = useState("");
   const [projetoId, setProjetoId] = useState("");
   const [erros, setErros] = useState([]);
   const [salvando, setSalvando] = useState(false);
 
   // PREENCHER O MODAL
-
   useEffect(() => {
-    if (aberto) {
-      if (tarefa) {
-        setTexto(tarefa.texto || "");
-        setPrioridade(tarefa.prioridade || "media");
-        setUsuarioId(tarefa.usuario_id ?? tarefa.usuarioId ?? "");
-        setProjetoId(tarefa.projeto_id ?? tarefa.projetoId ?? "");
-      } else {
-        setTexto("");
-        setPrioridade("media");
-        setUsuarioId("");
-        setProjetoId("");
-      }
+    if (!aberto) return;
+
+    setErros([]);
+
+    if (tarefa) {
+      setTexto(tarefa.texto || "");
+      setPrioridadeId(
+        tarefa.prioridade_id ?? tarefa.idprioridade ?? 2
+      );
+      setUsuarioId(tarefa.usuario_id ?? "");
+      setProjetoId(tarefa.projeto_id ?? "");
+    } else {
+      setTexto("");
+      setPrioridadeId(2);
+      setUsuarioId(usuarios[0]?.id ?? "");
+      setProjetoId(projetos[0]?.id ?? "");
     }
-  }, [tarefa, aberto]);
+  }, [tarefa, aberto, usuarios, projetos]);
 
-  // FECHAR MODAL COM ESC
-
+  // FECHAR COM ESC
   useEffect(() => {
-    // Só registra o evento quando o modal estiver aberto
     if (!aberto) return;
 
     function handleEsc(e) {
-      if (e.key === "Escape") {
+      if (e.key === "Escape" && !salvando) {
         onFechar();
       }
     }
 
-    // Registra o evento
     document.addEventListener("keydown", handleEsc);
 
-    // Remove o evento quando o modal fechar
     return () => {
       document.removeEventListener("keydown", handleEsc);
     };
-  }, [aberto, onFechar]);
+  }, [aberto, onFechar, salvando]);
 
   // SALVAR
-
   async function handleSalvar() {
     setErros([]);
+    if (!texto.trim()) {
+      setErros(["O campo 'texto' é obrigatório"]);
+      return;
+    }
     setSalvando(true);
 
     try {
       await onSalvar({
+        ...tarefa,
         id: tarefa?.id,
         texto,
-        prioridade,
-        usuarioId: Number(usuarioId),
-        projetoId: Number(projetoId),
         coluna: tarefa?.coluna || coluna,
+        prioridade_id: paraNumero(prioridadeId),
+        usuario_id: paraNumero(usuarioId),
+        projeto_id: paraNumero(projetoId),
       });
 
       onFechar();
@@ -82,33 +92,50 @@ function ModalTarefa({
     }
   }
 
-  // MODAL FECHADO
   if (!aberto) return null;
 
-  // MODAL
   return (
-    <div className={styles.overlay} onClick={onFechar}>
-      <div className={styles.card} onClick={(e) => e.stopPropagation()}>
+    <div
+      className={styles.overlay}
+      onClick={() => !salvando && onFechar()}
+    >
+      <div
+        className={styles.card}
+        onClick={(e) => e.stopPropagation()}
+      >
         <h2>{tarefa ? "Editar tarefa" : "Nova tarefa"}</h2>
 
-        <input
-          placeholder="Texto da tarefa"
-          value={texto}
-          onChange={(e) => setTexto(e.target.value)}
-        />
+        <div className={styles.campo}>
+          <label htmlFor="tarefa-texto">Tarefa</label>
+          <input
+            id="tarefa-texto"
+            placeholder="Descreva a tarefa"
+            value={texto}
+            onChange={(e) => setTexto(e.target.value)}
+          />
+        </div>
 
-        <select
-          value={prioridade}
-          onChange={(e) => setPrioridade(e.target.value)}
-        >
-          <option value="alta">Alta</option>
-          <option value="media">Média</option>
-          <option value="baixa">Baixa</option>
-        </select>
-
-        <label>
-          Usuário responsável
+        <div className={styles.campo}>
+          <label htmlFor="tarefa-prioridade">Prioridade</label>
           <select
+            id="tarefa-prioridade"
+            value={prioridadeId}
+            onChange={(e) => setPrioridadeId(e.target.value)}
+          >
+            {prioridades.map((p) => (
+              <option key={p.id} value={p.id}>
+                {p.descricao}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className={styles.campo}>
+          <label htmlFor="tarefa-responsavel">
+            Usuário responsável
+          </label>
+          <select
+            id="tarefa-responsavel"
             value={usuarioId}
             onChange={(e) => setUsuarioId(e.target.value)}
           >
@@ -119,11 +146,12 @@ function ModalTarefa({
               </option>
             ))}
           </select>
-        </label>
+        </div>
 
-        <label>
-          Projeto
+        <div className={styles.campo}>
+          <label htmlFor="tarefa-projeto">Projeto</label>
           <select
+            id="tarefa-projeto"
             value={projetoId}
             onChange={(e) => setProjetoId(e.target.value)}
           >
@@ -134,7 +162,7 @@ function ModalTarefa({
               </option>
             ))}
           </select>
-        </label>
+        </div>
 
         {erros.length > 0 && (
           <ul className={styles.erros}>
@@ -145,11 +173,19 @@ function ModalTarefa({
         )}
 
         <div className={styles.botoes}>
-          <button onClick={onFechar} disabled={salvando}>
+          <button
+            type="button"
+            onClick={onFechar}
+            disabled={salvando}
+          >
             Cancelar
           </button>
 
-          <button onClick={handleSalvar} disabled={salvando}>
+          <button
+            type="button"
+            onClick={handleSalvar}
+            disabled={salvando}
+          >
             {salvando ? "Salvando..." : "Salvar"}
           </button>
         </div>
@@ -157,4 +193,5 @@ function ModalTarefa({
     </div>
   );
 }
+
 export default ModalTarefa;

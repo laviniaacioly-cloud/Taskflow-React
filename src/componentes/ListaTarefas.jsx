@@ -1,5 +1,8 @@
 function ListaTarefas({
   tarefas,
+  prioridades = [],
+  usuarios = [],
+  projetos = [],
   onDeletar,
   onConcluir,
   onEditar,
@@ -8,92 +11,80 @@ function ListaTarefas({
   colunaProxima,
 }) {
   if (tarefas.length === 0) {
-    return (
-      <p className="msg-vazia">
-        Nenhuma tarefa nesta coluna.
-      </p>
-    );
+    return <p className="msg-vazia">Nenhuma tarefa nesta coluna.</p>;
   }
 
   return (
     <div className="lista-tarefas">
-      {tarefas.map((tarefa) => (
-        <div
-          key={tarefa.id}
-          className={`card ${tarefa.prioridade}`}
-        >
-          {/* TEXTO */}
-          <p>{tarefa.texto}</p>
+      {tarefas.map((tarefa) => {
+        const prioridadeTarefa = prioridades.find(
+          (p) => Number(p.id) === Number(tarefa.prioridade_id),
+        );
 
-          {/* CIDADE */}
-          {tarefa.cidade && (
-            <small className="cidade">
-              {tarefa.cidade}
-            </small>
-          )}
+        const nomePrioridade = prioridadeTarefa?.descricao || "";
 
-          {/* BOTÕES */}
-          <div className="acoes">
+        const responsavel = usuarios.find(
+          (u) => Number(u.id) === Number(tarefa.usuario_id),
+        );
 
-            {/* MOVER PARA TRÁS */}
-            {colunaAnterior && (
+        const projeto = projetos.find(
+          (p) => Number(p.id) === Number(tarefa.projeto_id),
+        );
+
+        return (
+          <div key={tarefa.id} className={`card ${nomePrioridade}`}>
+            {/* TEXTO */}
+            <p>{tarefa.texto}</p>
+
+            {/* RESPONSÁVEL E PROJETO */}
+            <div className="detalhes-tarefa">
+              <small>Responsável: {responsavel?.nome || "Não informado"}</small>
+
+              <small>Projeto: {projeto?.nome || "Não informado"}</small>
+            </div>
+
+            {/* BOTÕES */}
+            <div className="acoes">
+              {colunaAnterior && (
+                <button
+                  type="button"
+                  onClick={() => onMover(tarefa.id, colunaAnterior)}
+                  title="Voltar tarefa"
+                >
+                  ←
+                </button>
+              )}
+
+              {colunaProxima && (
+                <button
+                  type="button"
+                  onClick={() => onMover(tarefa.id, colunaProxima)}
+                  title="Avançar tarefa"
+                >
+                  →
+                </button>
+              )}
+
               <button
                 type="button"
-                onClick={() =>
-                  onMover(
-                    tarefa.id,
-                    colunaAnterior
-                  )
-                }
-                title="Voltar tarefa"
+                onClick={() => onEditar(tarefa)}
+                title="Editar tarefa"
               >
-                ←
+                ✏️
               </button>
-            )}
 
-            {/* MOVER PARA FRENTE */}
-            {colunaProxima && (
               <button
                 type="button"
-                onClick={() =>
-                  onMover(
-                    tarefa.id,
-                    colunaProxima
-                  )
-                }
-                title="Avançar tarefa"
+                onClick={() => onDeletar(tarefa.id)}
+                title="Excluir tarefa"
               >
-                →
+                🗑️
               </button>
-            )}
-
-            {/* EDITAR */}
-            <button
-              type="button"
-              onClick={() =>
-                onEditar(tarefa)
-              }
-              title="Editar tarefa"
-            >
-              ✏️
-            </button>
-
-            {/* EXCLUIR */}
-            <button
-              type="button"
-              onClick={() =>
-                onDeletar(tarefa.id)
-              }
-              title="Excluir tarefa"
-            >
-              🗑️
-            </button>
-
+            </div>
           </div>
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 }
-
 export default ListaTarefas;

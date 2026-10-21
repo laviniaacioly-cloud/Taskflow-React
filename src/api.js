@@ -25,7 +25,7 @@ api.interceptors.response.use(
 export function mensagensDeErro(erro) {
   const dados = erro.response?.data?.erro;
   if (!dados) {
-    return ["Não foi possivel coneectar à API"];
+    return ["Não foi possivel conectar à API."];
   }
   if (dados.detalhes) {
     return dados.detalhes;
