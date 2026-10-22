@@ -100,3 +100,33 @@
 .btnDeletar:active {
   transform: scale(0.95);
 }
+
+
+/* Etiqueta de prioridade */
+.prioridade {
+  display: inline-block;
+  width: fit-content;
+  margin: 4px 0 10px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+/* Prioridade alta */
+.prioridade-alta {
+  color: #b91c1c;
+  background-color: #fee2e2;
+}
+
+/* Prioridade média */
+.prioridade-media {
+  color: #92400e;
+  background-color: #fef3c7;
+}
+
+/* Prioridade baixa */
+.prioridade-baixa {
+  color: #166534;
+  background-color: #dcfce7;
+}

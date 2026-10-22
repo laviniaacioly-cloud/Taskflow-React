@@ -1,0 +1,139 @@
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 8, 20, 0.78);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  z-index: 1000;
+}
+
+.card {
+  width: 100%;
+  max-width: 420px;
+  background: linear-gradient(135deg, #2f1738, #351b40);
+  border: 1px solid #71347c;
+  border-radius: 12px;
+  padding: 24px;
+  color: #f8f0fa;
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.4);
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.card h2 {
+  margin: 0;
+  color: #ffffff;
+  font-size: 22px;
+}
+
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.campo label {
+  color: #e9d9ef;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.campo input:not([type="color"]) {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 11px 12px;
+  border: 1px solid #71347c;
+  border-radius: 7px;
+  background: #24132a;
+  color: #ffffff;
+  font-size: 14px;
+  outline: none;
+}
+
+.campo input:focus {
+  border-color: #c084fc;
+  box-shadow: 0 0 0 2px rgba(192, 132, 252, 0.15);
+}
+
+.campo input[type="color"] {
+  width: 64px;
+  height: 42px;
+  padding: 3px;
+  background: #24132a;
+  border: 1px solid #71347c;
+  border-radius: 7px;
+  cursor: pointer;
+}
+
+.campo span {
+  color: #cbb8d3;
+  font-size: 13px;
+}
+
+.erros {
+  margin: 0;
+  padding: 10px 12px 10px 30px;
+  border: 1px solid #ef4444;
+  border-radius: 7px;
+  background: rgba(239, 68, 68, 0.1);
+  color: #fca5a5;
+  font-size: 13px;
+}
+
+.card p[role="alert"] {
+  margin: 0;
+  color: #fca5a5;
+  font-size: 13px;
+}
+
+.botoes {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.botoes button {
+  padding: 10px 16px;
+  border: 1px solid #71347c;
+  border-radius: 7px;
+  background: #45204f;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s;
+}
+
+.botoes button:last-child {
+  background: #a00998;
+  border-color: #a00998;
+}
+
+.botoes button:hover:not(:disabled) {
+  filter: brightness(1.15);
+  transform: translateY(-1px);
+}
+
+.botoes button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+@media (max-width: 480px) {
+  .card {
+    padding: 18px;
+  }
+
+  .botoes {
+    flex-direction: column-reverse;
+  }
+
+  .botoes button {
+    width: 100%;
+  }
+}

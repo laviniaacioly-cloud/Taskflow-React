@@ -817,3 +817,100 @@ footer {
   font-size: 12px;
   opacity: 0.85;
 }
+
+
+/* ETIQUETA DE PRIORIDADE */
+.card .prioridade {
+  display: inline-block;
+  align-self: flex-start;
+  width: fit-content;
+  padding: 4px 10px;
+  margin: 2px 0 5px;
+  border-radius: 5px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+/* ALTA - VERMELHO */
+.card .prioridade-alta {
+  background-color: #fee2e2;
+  color: #b91c1c;
+}
+
+/* MÉDIA - AMARELO */
+.card .prioridade-media {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+/* BAIXA - VERDE */
+.card .prioridade-baixa {
+  background-color: #dcfce7;
+  color: #166534;
+}
+
+/* LEGENDA DE PRIORIDADES */
+.legenda-prioridades {
+  margin-top: 28px;
+  padding: 20px;
+  background: rgba(53, 27, 64, 0.65);
+  border: 1px solid #71347c;
+  border-radius: 12px;
+}
+
+.legenda-prioridades-cabecalho {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.legenda-prioridades-cabecalho h3 {
+  margin: 0 0 6px;
+  color: #fff;
+}
+
+.legenda-prioridades-cabecalho p {
+  margin: 0;
+  color: #cbb8d3;
+  font-size: 13px;
+}
+
+.legenda-prioridades-lista {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.legenda-prioridade-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 12px;
+  background: rgba(36, 19, 42, 0.8);
+  border: 1px solid #56315f;
+  border-radius: 8px;
+  color: #fff;
+}
+
+.legenda-prioridade-cor {
+  width: 12px;
+  height: 12px;
+  flex-shrink: 0;
+  border-radius: 50%;
+}
+
+.legenda-prioridade-nome {
+  font-size: 13px;
+}
+
+.legenda-prioridade-item button {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  padding: 4px;
+}
+
+

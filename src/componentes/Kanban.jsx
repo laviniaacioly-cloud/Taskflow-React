@@ -1,9 +1,9 @@
-//ok!!!
 import { useEffect, useState } from "react";
 import Header from "./Header";
 import api, { mensagensDeErro } from "../api";
 import ModalTarefa from "./ModalTarefa";
 import ListaTarefas from "./ListaTarefas";
+import ModalPrioridade from "./ModalPrioridade";
 
 function Kanban() {
   // ==========================================
@@ -16,6 +16,8 @@ function Kanban() {
   const [prioridades, setPrioridades] = useState([]);
   const [usuarios, setUsuarios] = useState([]);
   const [projetos, setProjetos] = useState([]);
+
+  const [modalPrioridadeAberto, setModalPrioridadeAberto] = useState(false);
 
   // ==========================================
   // MODAL
@@ -30,6 +32,84 @@ function Kanban() {
   // ==========================================
 
   // const [prioridade, setPrioridade] = useState("media");
+
+  async function cadastrarPrioridade(novaPrioridade) {
+    setPrioridades((atuais) => {
+      const jaExiste = atuais.some(
+        (p) =>
+          p.descricao.toLowerCase() === novaPrioridade.descricao.toLowerCase(),
+      );
+
+      if (jaExiste) return atuais;
+
+      return [...atuais, novaPrioridade];
+    });
+  }
+
+  // EDITAR PRIORIDADE
+  async function editarPrioridade(prioridade) {
+    const descricao = window.prompt(
+      "Nome da prioridade:",
+      prioridade.descricao,
+    );
+
+    if (descricao === null) return;
+
+    if (!descricao.trim()) {
+      setErro("O nome da prioridade é obrigatório.");
+      return;
+    }
+
+    const cor = window.prompt(
+      "Informe a cor hexadecimal (ex.: #FF9800):",
+      prioridade.cor || "#a00998",
+    );
+
+    if (cor === null) return;
+
+    if (!/^#[0-9A-Fa-f]{6}$/.test(cor)) {
+      setErro("Informe uma cor válida, como #FF9800.");
+      return;
+    }
+
+    try {
+      setErro("");
+
+      const resposta = await api.put(`/prioridades/${prioridade.id}`, {
+        descricao: descricao.trim(),
+        cor,
+      });
+
+      setPrioridades((atuais) =>
+        atuais.map((p) => (p.id === prioridade.id ? resposta.data : p)),
+      );
+    } catch (err) {
+      setErro(mensagensDeErro(err).join(" "));
+    }
+  }
+
+  // EXCLUIR PRIORIDADE
+  async function excluirPrioridade(prioridade) {
+    const confirmar = window.confirm(
+      `Deseja excluir a prioridade "${prioridade.descricao}"?`,
+    );
+
+    if (!confirmar) return;
+
+    try {
+      setErro("");
+
+      await api.delete(`/prioridades/${prioridade.id}`);
+
+      setPrioridades((atuais) => atuais.filter((p) => p.id !== prioridade.id));
+
+      if (filtroPrioridade === prioridade.descricao.toLowerCase()) {
+        setFiltroPrioridade("todas");
+      }
+    } catch (err) {
+      setErro(mensagensDeErro(err).join(" "));
+    }
+  }
 
   // ==========================================
   // FILTRO
@@ -259,15 +339,38 @@ function Kanban() {
         )}
 
         <div className="filtro-prioridade">
+          <div style={{ margin: "12px 0" }}>
+            <button
+              type="button"
+              className="kanban-btn-add"
+              onClick={() => setModalPrioridadeAberto(true)}
+              style={{
+                width: "auto",
+                minWidth: "180px",
+                whiteSpace: "nowrap",
+                padding: "10px 16px",
+              }}
+            >
+              + Nova prioridade
+            </button>
+          </div>
+
           <label>Filtrar por prioridade:</label>
           <select
             value={filtroPrioridade}
             onChange={(e) => setFiltroPrioridade(e.target.value)}
           >
             <option value="todas">Todas</option>
-            <option value="alta">Alta</option>
-            <option value="media">Media</option>
-            <option value="baixa">Baixa</option>
+
+            {prioridades.map((prioridade) => (
+              <option
+                key={prioridade.id}
+                value={prioridade.descricao.toLowerCase()}
+              >
+                {prioridade.descricao.charAt(0).toUpperCase() +
+                  prioridade.descricao.slice(1)}
+              </option>
+            ))}
           </select>
         </div>
 
@@ -385,6 +488,53 @@ function Kanban() {
           </div>
         </section>
 
+        {/* LEGENDA DE PRIORIDADES */}
+        <section className="legenda-prioridades">
+          <div className="legenda-prioridades-cabecalho">
+            <div>
+              <h3>Legenda de prioridades</h3>
+              <p>Consulte e gerencie as prioridades do projeto.</p>
+            </div>
+          </div>
+
+
+          <div className="legenda-prioridades-lista">
+            {prioridades.map((prioridade) => (
+              <div className="legenda-prioridade-item" key={prioridade.id}>
+                <span
+                  className="legenda-prioridade-cor"
+                  style={{
+                    backgroundColor: prioridade.cor || "#a00998",
+                  }}
+                />
+
+                <span className="legenda-prioridade-nome">
+                  {prioridade.descricao.charAt(0).toUpperCase() +
+                    prioridade.descricao.slice(1)}
+                </span>
+
+                <button
+                  type="button"
+                  onClick={() => editarPrioridade(prioridade)}
+                  title="Editar prioridade"
+                  aria-label={`Editar ${prioridade.descricao}`}
+                >
+                  ✏️
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => excluirPrioridade(prioridade)}
+                  title="Excluir prioridade"
+                  aria-label={`Excluir ${prioridade.descricao}`}
+                >
+                  🗑️
+                </button>
+              </div>
+            ))}
+          </div>
+        </section>
+
         {/* ==================================
           MODAL
       ================================== */}
@@ -397,6 +547,11 @@ function Kanban() {
           prioridades={prioridades}
           usuarios={usuarios}
           projetos={projetos}
+        />
+        <ModalPrioridade
+          aberto={modalPrioridadeAberto}
+          onFechar={() => setModalPrioridadeAberto(false)}
+          onCadastrada={cadastrarPrioridade}
         />
       </main>
 
