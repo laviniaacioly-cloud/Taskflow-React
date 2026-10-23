@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import api from "../api";
 import styles from "./ModalPrioridade.module.css";
@@ -17,11 +18,11 @@ function ModalPrioridade({
   const editando = Boolean(prioridadeEditando);
 
   useEffect(() => {
-    if (aberto) {
-      setDescricao(prioridadeEditando?.descricao || "");
-      setCor(prioridadeEditando?.cor || "#FF9800");
-      setErro("");
-    }
+    if (!aberto) return;
+
+    setDescricao(prioridadeEditando?.descricao || "");
+    setCor(prioridadeEditando?.cor || "#FF9800");
+    setErro("");
   }, [aberto, prioridadeEditando]);
 
   if (!aberto) return null;
@@ -59,7 +60,7 @@ function ModalPrioridade({
       setErro(
         e.response?.data?.erro?.mensagem ||
           e.response?.data?.erro ||
-          `Não foi possível ${editando ? "editar" : "cadastrar"} a prioridade.`
+          "Não foi possível salvar a prioridade."
       );
     } finally {
       setSalvando(false);

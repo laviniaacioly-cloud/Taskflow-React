@@ -18,7 +18,7 @@ function Kanban() {
   const [projetos, setProjetos] = useState([]);
 
   const [modalPrioridadeAberto, setModalPrioridadeAberto] = useState(false);
-
+  const [prioridadeEditando, setPrioridadeEditando] = useState(null);
   // ==========================================
   // MODAL
   // ==========================================
@@ -46,46 +46,19 @@ function Kanban() {
     });
   }
 
-  // EDITAR PRIORIDADE
-  async function editarPrioridade(prioridade) {
-    const descricao = window.prompt(
-      "Nome da prioridade:",
-      prioridade.descricao,
+  function abrirModalEditarPrioridade(prioridade) {
+    setPrioridadeEditando(prioridade);
+    setModalPrioridadeAberto(true);
+  }
+
+  function atualizarPrioridade(prioridadeAtualizada) {
+    setPrioridades((atuais) =>
+      atuais.map((p) =>
+        p.id === prioridadeAtualizada.id ? prioridadeAtualizada : p,
+      ),
     );
 
-    if (descricao === null) return;
-
-    if (!descricao.trim()) {
-      setErro("O nome da prioridade é obrigatório.");
-      return;
-    }
-
-    const cor = window.prompt(
-      "Informe a cor hexadecimal (ex.: #FF9800):",
-      prioridade.cor || "#a00998",
-    );
-
-    if (cor === null) return;
-
-    if (!/^#[0-9A-Fa-f]{6}$/.test(cor)) {
-      setErro("Informe uma cor válida, como #FF9800.");
-      return;
-    }
-
-    try {
-      setErro("");
-
-      const resposta = await api.put(`/prioridades/${prioridade.id}`, {
-        descricao: descricao.trim(),
-        cor,
-      });
-
-      setPrioridades((atuais) =>
-        atuais.map((p) => (p.id === prioridade.id ? resposta.data : p)),
-      );
-    } catch (err) {
-      setErro(mensagensDeErro(err).join(" "));
-    }
+    setPrioridadeEditando(null);
   }
 
   // EXCLUIR PRIORIDADE
@@ -497,7 +470,6 @@ function Kanban() {
             </div>
           </div>
 
-
           <div className="legenda-prioridades-lista">
             {prioridades.map((prioridade) => (
               <div className="legenda-prioridade-item" key={prioridade.id}>
@@ -515,7 +487,7 @@ function Kanban() {
 
                 <button
                   type="button"
-                  onClick={() => editarPrioridade(prioridade)}
+                  onClick={() => abrirModalEditarPrioridade(prioridade)}
                   title="Editar prioridade"
                   aria-label={`Editar ${prioridade.descricao}`}
                 >
@@ -550,8 +522,13 @@ function Kanban() {
         />
         <ModalPrioridade
           aberto={modalPrioridadeAberto}
-          onFechar={() => setModalPrioridadeAberto(false)}
+          onFechar={() => {
+            setModalPrioridadeAberto(false);
+            setPrioridadeEditando(null);
+          }}
           onCadastrada={cadastrarPrioridade}
+          prioridadeEditando={prioridadeEditando}
+          onEditada={atualizarPrioridade}
         />
       </main>
 
