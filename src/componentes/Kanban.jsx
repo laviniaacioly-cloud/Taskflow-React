@@ -237,7 +237,6 @@ function Kanban() {
       if (!tarefa) return;
 
       const resposta = await api.put(`/tarefas/${id}`, {
-        ...tarefa,
         coluna: novaColuna,
       });
 
