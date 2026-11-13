@@ -6,6 +6,8 @@ import Sidebar from "./componentes/Sidebar";
 import RotaPrivada from "./componentes/RotaPrivada";
 import Kanban from "./componentes/Kanban";
 import { useAuth } from "./Contexts/AuthContext";
+import Projetos from "./Pages/Projetos";
+import ProjetoTarefas from "./Pages/projetosTarefas";
 
 function App() {
   const { token } = useAuth();
@@ -28,6 +30,22 @@ function App() {
             }
           />
 
+          <Route
+            path="/projetos/:id/tarefas"
+            element={
+              <RotaPrivada>
+                <ProjetoTarefas />
+              </RotaPrivada>
+            }
+          />
+          <Route
+            path="/projetos"
+            element={
+              <RotaPrivada>
+                <Projetos />
+              </RotaPrivada>
+            }
+          />
           <Route path="/sobre" element={<Sobre />} />
           <Route path="/login" element={<Login />} />
           <Route path="*" element={<h1>Página não encontrada</h1>} />
