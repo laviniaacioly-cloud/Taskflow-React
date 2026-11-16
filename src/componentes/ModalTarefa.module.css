@@ -10,8 +10,8 @@
 }
 
 .card {
-  background: #53035c;
-  border: 1px solid #dd0fdd;
+  background: #17151F;
+  border: 1px solid #49336B;
   border-radius: 12px;
   padding: 28px 32px;
   width: 100%;
@@ -23,7 +23,7 @@
 }
 
 .card h2 {
-  color: #ddd;
+  color: #FFFFFF;
   font-size: 1.2rem;
   margin: 0 0 5px;
 }
@@ -32,9 +32,9 @@
 .card select {
   width: 100%;
   box-sizing: border-box;
-  background: #270d2a;
-  color: #e2e8f0;
-  border: 1px solid #8d5e8f;
+  background: #09090F;
+  color: #FFFFFF;
+  border: 1px solid #49336B;
   border-radius: 6px;
   padding: 10px 14px;
   font-size: 1rem;
@@ -44,11 +44,11 @@
 
 .card input:focus,
 .card select:focus {
-  border-color: #f838e8;
+  border-color: #7C3AED;
 }
 
 .cidade {
-  color: #a7a9ac;
+  color: #A1A1AA;
   font-size: 0.8rem;
   margin: -5px 0 0;
 }
@@ -72,23 +72,22 @@
 
 .botoes button:first-child {
   background: transparent;
-  border: 1px solid #a514aa;
-  color: #94a3b8;
+  border: 1px solid #49336B;
+  color: #C4B5FD;
 }
 
 .botoes button:first-child:hover {
-  background: #ec1124;
-  color: white;
+  background: #6D28D9;
+  color: #FFFFFF;
 }
 
 .botoes button:last-child {
-  background: #a30481;
-  color: white;
+  background: #7C3AED;
+  color: #FFFFFF;
   border: none;
   font-weight: 700;
 }
 
 .botoes button:last-child:hover {
-  background: #86227e;
+  background: #6D28D9;
 }
-

@@ -1,8 +1,7 @@
-
 .overlay {
   position: fixed;
   inset: 0;
-  background: rgba(15, 8, 20, 0.78);
+  background: rgba(0, 0, 0, 0.78);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -13,11 +12,11 @@
 .card {
   width: 100%;
   max-width: 420px;
-  background: linear-gradient(135deg, #2f1738, #351b40);
-  border: 1px solid #71347c;
+  background: linear-gradient(135deg, #17151F, #1C1924);
+  border: 1px solid #49336B;
   border-radius: 12px;
   padding: 24px;
-  color: #f8f0fa;
+  color: #FFFFFF;
   box-shadow: 0 12px 35px rgba(0, 0, 0, 0.4);
   display: flex;
   flex-direction: column;
@@ -26,7 +25,7 @@
 
 .card h2 {
   margin: 0;
-  color: #ffffff;
+  color: #FFFFFF;
   font-size: 22px;
 }
 
@@ -37,7 +36,7 @@
 }
 
 .campo label {
-  color: #e9d9ef;
+  color: #C4B5FD;
   font-size: 14px;
   font-weight: 600;
 }
@@ -46,31 +45,31 @@
   width: 100%;
   box-sizing: border-box;
   padding: 11px 12px;
-  border: 1px solid #71347c;
+  border: 1px solid #49336B;
   border-radius: 7px;
-  background: #24132a;
-  color: #ffffff;
+  background: #09090F;
+  color: #FFFFFF;
   font-size: 14px;
   outline: none;
 }
 
 .campo input:focus {
-  border-color: #c084fc;
-  box-shadow: 0 0 0 2px rgba(192, 132, 252, 0.15);
+  border-color: #7C3AED;
+  box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.15);
 }
 
 .campo input[type="color"] {
   width: 64px;
   height: 42px;
   padding: 3px;
-  background: #24132a;
-  border: 1px solid #71347c;
+  background: #09090F;
+  border: 1px solid #49336B;
   border-radius: 7px;
   cursor: pointer;
 }
 
 .campo span {
-  color: #cbb8d3;
+  color: #A1A1AA;
   font-size: 13px;
 }
 
@@ -99,10 +98,10 @@
 
 .botoes button {
   padding: 10px 16px;
-  border: 1px solid #71347c;
+  border: 1px solid #49336B;
   border-radius: 7px;
-  background: #45204f;
-  color: #ffffff;
+  background: #1C1924;
+  color: #FFFFFF;
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
@@ -110,8 +109,8 @@
 }
 
 .botoes button:last-child {
-  background: #a00998;
-  border-color: #a00998;
+  background: #7C3AED;
+  border-color: #7C3AED;
 }
 
 .botoes button:hover:not(:disabled) {

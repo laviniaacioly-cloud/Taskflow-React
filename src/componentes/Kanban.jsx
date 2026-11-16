@@ -238,6 +238,7 @@ function Kanban() {
 
       const resposta = await api.put(`/tarefas/${id}`, {
         coluna: novaColuna,
+        prioridade_id: tarefa.prioridade_id,
       });
 
       setTarefas((tarefasAtuais) =>
