@@ -16,12 +16,10 @@ function ModalTarefa({
   tarefa = null,
   coluna = "afazer",
   prioridades = [],
-  usuarios = [],
   projetos = [],
 }) {
   const [texto, setTexto] = useState("");
   const [prioridadeId, setPrioridadeId] = useState(2);
-  const [usuarioId, setUsuarioId] = useState("");
   const [projetoId, setProjetoId] = useState("");
   const [erros, setErros] = useState([]);
   const [salvando, setSalvando] = useState(false);
@@ -37,15 +35,13 @@ function ModalTarefa({
       setPrioridadeId(
         tarefa.prioridade_id ?? tarefa.idprioridade ?? 2
       );
-      setUsuarioId(tarefa.usuario_id ?? "");
       setProjetoId(tarefa.projeto_id ?? "");
     } else {
       setTexto("");
       setPrioridadeId(2);
-      setUsuarioId(usuarios[0]?.id ?? "");
       setProjetoId(projetos[0]?.id ?? "");
     }
-  }, [tarefa, aberto, usuarios, projetos]);
+  }, [tarefa, aberto, projetos]);
 
   // FECHAR COM ESC
   useEffect(() => {
@@ -67,20 +63,26 @@ function ModalTarefa({
   // SALVAR
   async function handleSalvar() {
     setErros([]);
+
     if (!texto.trim()) {
       setErros(["O campo 'texto' é obrigatório"]);
       return;
     }
+
+    if (!projetoId) {
+      setErros(["Selecione um projeto"]);
+      return;
+    }
+
     setSalvando(true);
 
     try {
       await onSalvar({
         ...tarefa,
         id: tarefa?.id,
-        texto,
+        texto: texto.trim(),
         coluna: tarefa?.coluna || coluna,
         prioridade_id: paraNumero(prioridadeId),
-        usuario_id: paraNumero(usuarioId),
         projeto_id: paraNumero(projetoId),
       });
 
@@ -131,24 +133,6 @@ function ModalTarefa({
         </div>
 
         <div className={styles.campo}>
-          <label htmlFor="tarefa-responsavel">
-            Usuário responsável
-          </label>
-          <select
-            id="tarefa-responsavel"
-            value={usuarioId}
-            onChange={(e) => setUsuarioId(e.target.value)}
-          >
-            <option value="">Selecione um usuário</option>
-            {usuarios.map((usuario) => (
-              <option key={usuario.id} value={usuario.id}>
-                {usuario.nome}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div className={styles.campo}>
           <label htmlFor="tarefa-projeto">Projeto</label>
           <select
             id="tarefa-projeto"
@@ -156,6 +140,7 @@ function ModalTarefa({
             onChange={(e) => setProjetoId(e.target.value)}
           >
             <option value="">Selecione um projeto</option>
+
             {projetos.map((projeto) => (
               <option key={projeto.id} value={projeto.id}>
                 {projeto.nome}

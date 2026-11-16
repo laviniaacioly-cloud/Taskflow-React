@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../Contexts/AuthContext";
@@ -10,7 +11,6 @@ function Projetos() {
 
   const [projetos, setProjetos] = useState([]);
   const [tarefas, setTarefas] = useState([]);
-  const [usuarios, setUsuarios] = useState([]);
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState("");
   const [ordem, setOrdem] = useState("todos");
@@ -19,24 +19,25 @@ function Projetos() {
   const [projetoEditando, setProjetoEditando] = useState(null);
   const [nome, setNome] = useState("");
   const [descricao, setDescricao] = useState("");
-  const [usuarioId, setUsuarioId] = useState("");
   const [erroModal, setErroModal] = useState("");
   const [salvando, setSalvando] = useState(false);
+
+  // ==========================================
+  // CARREGAR PROJETOS E TAREFAS
+  // ==========================================
 
   async function carregarDados() {
     try {
       setCarregando(true);
       setErro("");
 
-      const [resProjetos, resTarefas, resUsuarios] = await Promise.all([
+      const [resProjetos, resTarefas] = await Promise.all([
         api.get("/projetos"),
         api.get("/tarefas"),
-        api.get("/usuarios"),
       ]);
 
       setProjetos(resProjetos.data);
       setTarefas(resTarefas.data);
-      setUsuarios(resUsuarios.data);
     } catch (err) {
       setErro(mensagensDeErro(err).join(" "));
     } finally {
@@ -47,6 +48,10 @@ function Projetos() {
   useEffect(() => {
     carregarDados();
   }, []);
+
+  // ==========================================
+  // CONTAR TAREFAS DO PROJETO
+  // ==========================================
 
   function contarTarefas(projetoId) {
     const tarefasProjeto = tarefas.filter(
@@ -61,23 +66,33 @@ function Projetos() {
     };
   }
 
+  // ==========================================
+  // ABRIR MODAL PARA NOVO PROJETO
+  // ==========================================
+
   function abrirNovoProjeto() {
     setProjetoEditando(null);
     setNome("");
     setDescricao("");
-    setUsuarioId(usuario?.id ? String(usuario.id) : "");
     setErroModal("");
     setModalAberto(true);
   }
+
+  // ==========================================
+  // ABRIR MODAL PARA EDITAR
+  // ==========================================
 
   function abrirEdicao(projeto) {
     setProjetoEditando(projeto);
     setNome(projeto.nome || "");
     setDescricao(projeto.descricao || "");
-    setUsuarioId(String(projeto.usuario_id));
     setErroModal("");
     setModalAberto(true);
   }
+
+  // ==========================================
+  // FECHAR MODAL
+  // ==========================================
 
   function fecharModal() {
     if (salvando) return;
@@ -86,6 +101,10 @@ function Projetos() {
     setProjetoEditando(null);
     setErroModal("");
   }
+
+  // ==========================================
+  // SALVAR PROJETO
+  // ==========================================
 
   async function salvarProjeto(e) {
     e.preventDefault();
@@ -96,15 +115,9 @@ function Projetos() {
       return;
     }
 
-    if (!usuarioId) {
-      setErroModal("Selecione o responsável pelo projeto.");
-      return;
-    }
-
     const dadosProjeto = {
       nome: nome.trim(),
       descricao: descricao.trim(),
-      usuarioId: Number(usuarioId),
     };
 
     try {
@@ -136,6 +149,10 @@ function Projetos() {
     }
   }
 
+  // ==========================================
+  // ORDENAR PROJETOS
+  // ==========================================
+
   const projetosOrdenados = [...projetos].sort((a, b) => {
     if (ordem === "recentes") {
       return new Date(b.criado_em) - new Date(a.criado_em);
@@ -147,6 +164,10 @@ function Projetos() {
 
     return 0;
   });
+
+  // ==========================================
+  // EXCLUIR PROJETO
+  // ==========================================
 
   async function excluirProjeto(projeto) {
     const confirmar = window.confirm(
@@ -160,11 +181,13 @@ function Projetos() {
     try {
       await api.delete(`/projetos/${projeto.id}`);
 
-      setProjetos((lista) => lista.filter((item) => item.id !== projeto.id));
+      setProjetos((lista) =>
+        lista.filter((item) => item.id !== projeto.id),
+      );
     } catch (err) {
       if (err.response?.status === 409) {
         setErro(
-          "Não é possível excluir este projeto porque ele possui tarefas associadas. Remova as tarefas antes de tentar novamente. Recarregue a página",
+          "Não é possível excluir este projeto porque ele possui tarefas associadas. Remova as tarefas antes de tentar novamente.",
         );
         return;
       }
@@ -172,6 +195,10 @@ function Projetos() {
       setErro(mensagensDeErro(err).join(" "));
     }
   }
+
+  // ==========================================
+  // JSX
+  // ==========================================
 
   return (
     <div className={styles.container}>
@@ -181,7 +208,9 @@ function Projetos() {
           <p>Organize seus projetos e acompanhe suas tarefas.</p>
         </div>
 
-        <span className={styles.totalProjetos}>{projetos.length} projetos</span>
+        <span className={styles.totalProjetos}>
+          {projetos.length} projetos
+        </span>
 
         <select
           className={styles.filtroOrdem}
@@ -212,10 +241,6 @@ function Projetos() {
           projetosOrdenados.map((projeto) => {
             const quantidade = contarTarefas(projeto.id);
 
-            const usuarioProjeto = usuarios.find(
-              (usuario) => Number(usuario.id) === Number(projeto.usuario_id),
-            );
-
             return (
               <article key={projeto.id} className={styles.cardProjeto}>
                 <div className={styles.cardCabecalho}>
@@ -229,7 +254,7 @@ function Projetos() {
                 <div className={styles.responsavel}>
                   <span>Responsável:</span>
                   <strong>
-                    {usuarioProjeto?.nome || "Usuário não encontrado"}
+                    {usuario?.nome || "Usuário logado"}
                   </strong>
                 </div>
 
@@ -249,7 +274,9 @@ function Projetos() {
                 <div className={styles.acoesProjeto}>
                   <button
                     className={styles.botaoTarefas}
-                    onClick={() => navigate(`/projetos/${projeto.id}/tarefas`)}
+                    onClick={() =>
+                      navigate(`/projetos/${projeto.id}/tarefas`)
+                    }
                   >
                     Tarefas do projeto
                   </button>
@@ -298,10 +325,16 @@ function Projetos() {
           })}
       </section>
 
+      {/* ==================================
+          MODAL DE PROJETO
+      ================================== */}
+
       {modalAberto && (
         <div className={styles.modalFundo}>
           <div className={styles.modal}>
-            <h2>{projetoEditando ? "Editar projeto" : "Novo projeto"}</h2>
+            <h2>
+              {projetoEditando ? "Editar projeto" : "Novo projeto"}
+            </h2>
 
             <form onSubmit={salvarProjeto}>
               <label htmlFor="nomeProjeto">Nome do projeto</label>
@@ -325,24 +358,9 @@ function Projetos() {
                 rows="4"
               />
 
-              <label htmlFor="responsavelProjeto">Responsável</label>
-
-              <select
-                id="responsavelProjeto"
-                value={usuarioId}
-                onChange={(e) => setUsuarioId(e.target.value)}
-                required
-              >
-                <option value="">Selecione o responsável</option>
-
-                {usuarios.map((item) => (
-                  <option key={item.id} value={item.id}>
-                    {item.nome}
-                  </option>
-                ))}
-              </select>
-
-              {erroModal && <p className={styles.erroModal}>{erroModal}</p>}
+              {erroModal && (
+                <p className={styles.erroModal}>{erroModal}</p>
+              )}
 
               <div className={styles.acoesModal}>
                 <button

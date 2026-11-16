@@ -1,9 +1,11 @@
+
 import { useEffect, useState } from "react";
 import Header from "./Header";
 import api, { mensagensDeErro } from "../api";
 import ModalTarefa from "./ModalTarefa";
 import ListaTarefas from "./ListaTarefas";
 import ModalPrioridade from "./ModalPrioridade";
+import Comentarios from "./Comentarios";
 
 function Kanban() {
   // ==========================================
@@ -19,6 +21,7 @@ function Kanban() {
 
   const [modalPrioridadeAberto, setModalPrioridadeAberto] = useState(false);
   const [prioridadeEditando, setPrioridadeEditando] = useState(null);
+
   // ==========================================
   // MODAL
   // ==========================================
@@ -28,10 +31,8 @@ function Kanban() {
   const [colunaAtiva, setColunaAtiva] = useState("afazer");
 
   // ==========================================
-  // FORMULÁRIO
+  // PRIORIDADES
   // ==========================================
-
-  // const [prioridade, setPrioridade] = useState("media");
 
   async function cadastrarPrioridade(novaPrioridade) {
     setPrioridades((atuais) => {
@@ -74,7 +75,9 @@ function Kanban() {
 
       await api.delete(`/prioridades/${prioridade.id}`);
 
-      setPrioridades((atuais) => atuais.filter((p) => p.id !== prioridade.id));
+      setPrioridades((atuais) =>
+        atuais.filter((p) => p.id !== prioridade.id),
+      );
 
       if (filtroPrioridade === prioridade.descricao.toLowerCase()) {
         setFiltroPrioridade("todas");
@@ -91,7 +94,7 @@ function Kanban() {
   const [filtroPrioridade, setFiltroPrioridade] = useState("todas");
 
   // ==========================================
-  // CARREGAR TAREFAS API
+  // CARREGAR DADOS DA API
   // ==========================================
 
   useEffect(() => {
@@ -129,7 +132,8 @@ function Kanban() {
 
   useEffect(() => {
     const quantidadeAFazer = tarefas.filter(
-      (tarefa) => tarefa.coluna === "afazer" || tarefa.coluna === "andamento",
+      (tarefa) =>
+        tarefa.coluna === "afazer" || tarefa.coluna === "andamento",
     ).length;
 
     if (quantidadeAFazer > 0) {
@@ -159,12 +163,11 @@ function Kanban() {
 
   function abrirModalEditar(tarefa) {
     setTarefaEditando(tarefa);
-    // setColunaAtiva(tarefa.coluna);
     setModalAberto(true);
   }
 
   // ==========================================
-  // SALVAR TAREFA DO MODAL -editar tarefa
+  // SALVAR TAREFA
   // ==========================================
 
   async function salvarTarefa(dados) {
@@ -175,17 +178,25 @@ function Kanban() {
         const resposta = await api.put(`/tarefas/${dados.id}`, dados);
 
         setTarefas((tarefasAtuais) =>
-          tarefasAtuais.map((t) => (t.id === dados.id ? resposta.data : t)),
+          tarefasAtuais.map((t) =>
+            t.id === dados.id ? resposta.data : t,
+          ),
         );
       } else {
         const resposta = await api.post("/tarefas", dados);
 
-        setTarefas((tarefasAtuais) => [...tarefasAtuais, resposta.data]);
+        setTarefas((tarefasAtuais) => [
+          ...tarefasAtuais,
+          resposta.data,
+        ]);
       }
     } catch (err) {
       const mensagens = mensagensDeErro(err);
       setErro(mensagens.join(" "));
       console.error("Erro ao salvar tarefa:", err);
+
+      // Permite que o ModalTarefa apresente a mensagem de erro
+      throw err;
     }
   }
 
@@ -199,7 +210,9 @@ function Kanban() {
 
       await api.delete(`/tarefas/${id}`);
 
-      setTarefas((tarefasAtuais) => tarefasAtuais.filter((t) => t.id !== id));
+      setTarefas((tarefasAtuais) =>
+        tarefasAtuais.filter((t) => t.id !== id),
+      );
     } catch (err) {
       const mensagens = mensagensDeErro(err);
       setErro(mensagens.join(" "));
@@ -212,8 +225,8 @@ function Kanban() {
   // ==========================================
 
   function concluirTarefa(id) {
-    setTarefas(
-      tarefas.map((tarefa) =>
+    setTarefas((tarefasAtuais) =>
+      tarefasAtuais.map((tarefa) =>
         tarefa.id === id
           ? {
               ...tarefa,
@@ -242,7 +255,9 @@ function Kanban() {
       });
 
       setTarefas((tarefasAtuais) =>
-        tarefasAtuais.map((t) => (t.id === id ? resposta.data : t)),
+        tarefasAtuais.map((t) =>
+          t.id === id ? resposta.data : t,
+        ),
       );
     } catch (err) {
       const mensagens = mensagensDeErro(err);
@@ -252,7 +267,7 @@ function Kanban() {
   }
 
   // ==========================================
-  // FILTRO
+  // FILTRO DE PRIORIDADE
   // ==========================================
 
   const tarefasFiltradas = tarefas.filter((tarefa) => {
@@ -270,16 +285,6 @@ function Kanban() {
   // ==========================================
   // CONTADORES
   // ==========================================
-
-  const totalTarefas = tarefas.length;
-
-  const tarefasPendentes = tarefas.filter(
-    (tarefa) => tarefa.coluna !== "concluido",
-  ).length;
-
-  const tarefasConcluidas = tarefas.filter(
-    (tarefa) => tarefa.coluna === "concluido",
-  ).length;
 
   const quantidadeAFazer = tarefas.filter(
     (tarefa) => tarefa.coluna === "afazer",
@@ -307,8 +312,11 @@ function Kanban() {
             Carregando tarefas...
           </p>
         )}
+
         {erro && (
-          <p style={{ textAlign: "center", color: "#EF4444" }}>{erro}</p>
+          <p style={{ textAlign: "center", color: "#EF4444" }}>
+            {erro}
+          </p>
         )}
 
         <div className="filtro-prioridade">
@@ -329,6 +337,7 @@ function Kanban() {
           </div>
 
           <label>Filtrar por prioridade:</label>
+
           <select
             value={filtroPrioridade}
             onChange={(e) => setFiltroPrioridade(e.target.value)}
@@ -352,16 +361,17 @@ function Kanban() {
         ================================== */}
 
         <section className="kanban">
-          {/* ==================================
-              A FAZER
-          ================================== */}
+
+          {/* A FAZER */}
 
           <div className="kanban-coluna">
             <div className="kanban-coluna-header">
               <h3>A Fazer</h3>
 
               <div className="kanban-header-acoes">
-                <span className="kanban-contador">{quantidadeAFazer}</span>
+                <span className="kanban-contador">
+                  {quantidadeAFazer}
+                </span>
 
                 <button
                   className="kanban-btn-add"
@@ -388,16 +398,16 @@ function Kanban() {
             />
           </div>
 
-          {/* ==================================
-              EM ANDAMENTO
-          ================================== */}
+          {/* EM ANDAMENTO */}
 
           <div className="kanban-coluna">
             <div className="kanban-coluna-header">
               <h3>Em Andamento</h3>
 
               <div className="kanban-header-acoes">
-                <span className="kanban-contador">{quantidadeAndamento}</span>
+                <span className="kanban-contador">
+                  {quantidadeAndamento}
+                </span>
 
                 <button
                   className="kanban-btn-add"
@@ -424,16 +434,16 @@ function Kanban() {
             />
           </div>
 
-          {/* ==================================
-              CONCLUÍDO
-          ================================== */}
+          {/* CONCLUÍDO */}
 
           <div className="kanban-coluna">
             <div className="kanban-coluna-header">
               <h3>Concluído</h3>
 
               <div className="kanban-header-acoes">
-                <span className="kanban-contador">{quantidadeConcluido}</span>
+                <span className="kanban-contador">
+                  {quantidadeConcluido}
+                </span>
 
                 <button
                   className="kanban-btn-add"
@@ -462,6 +472,7 @@ function Kanban() {
         </section>
 
         {/* LEGENDA DE PRIORIDADES */}
+
         <section className="legenda-prioridades">
           <div className="legenda-prioridades-cabecalho">
             <div>
@@ -472,7 +483,10 @@ function Kanban() {
 
           <div className="legenda-prioridades-lista">
             {prioridades.map((prioridade) => (
-              <div className="legenda-prioridade-item" key={prioridade.id}>
+              <div
+                className="legenda-prioridade-item"
+                key={prioridade.id}
+              >
                 <span
                   className="legenda-prioridade-cor"
                   style={{
@@ -507,9 +521,8 @@ function Kanban() {
           </div>
         </section>
 
-        {/* ==================================
-          MODAL
-      ================================== */}
+        {/* MODAL DE TAREFA */}
+
         <ModalTarefa
           aberto={modalAberto}
           onFechar={() => setModalAberto(false)}
@@ -517,9 +530,11 @@ function Kanban() {
           tarefa={tarefaEditando}
           coluna={colunaAtiva}
           prioridades={prioridades}
-          usuarios={usuarios}
           projetos={projetos}
         />
+
+        {/* MODAL DE PRIORIDADE */}
+
         <ModalPrioridade
           aberto={modalPrioridadeAberto}
           onFechar={() => {
@@ -532,9 +547,7 @@ function Kanban() {
         />
       </main>
 
-      {/* ==================================
-          RODAPÉ
-      ================================== */}
+      {/* RODAPÉ */}
 
       <footer>
         <p>TaskFlow 2026 - Lavínia D Acioly</p>

@@ -1,3 +1,4 @@
+
 function ListaTarefas({
   tarefas,
   prioridades = [],
@@ -7,6 +8,7 @@ function ListaTarefas({
   onConcluir,
   onEditar,
   onMover,
+  onAbrirComentarios = () => {},
   colunaAnterior,
   colunaProxima,
 }) {
@@ -18,17 +20,18 @@ function ListaTarefas({
     <div className="lista-tarefas">
       {tarefas.map((tarefa) => {
         const prioridadeTarefa = prioridades.find(
-          (p) => Number(p.id) === Number(tarefa.prioridade_id),
+          (p) => Number(p.id) === Number(tarefa.prioridade_id)
         );
 
         const nomePrioridade = prioridadeTarefa?.descricao || "";
         const corPrioridade = prioridadeTarefa?.cor || "#f06509";
+
         const responsavel = usuarios.find(
-          (u) => Number(u.id) === Number(tarefa.usuario_id),
+          (u) => Number(u.id) === Number(tarefa.usuario_id)
         );
 
         const projeto = projetos.find(
-          (p) => Number(p.id) === Number(tarefa.projeto_id),
+          (p) => Number(p.id) === Number(tarefa.projeto_id)
         );
 
         return (
@@ -58,9 +61,14 @@ function ListaTarefas({
 
             {/* RESPONSÁVEL E PROJETO */}
             <div className="detalhes-tarefa">
-              <small>Responsável: {responsavel?.nome || "Não informado"}</small>
+              <small>
+                Responsável:{" "}
+                {responsavel?.nome || tarefa.usuario?.nome || "Não informado"}
+              </small>
 
-              <small>Projeto: {projeto?.nome || "Não informado"}</small>
+              <small>
+                Projeto: {projeto?.nome || tarefa.projetos?.nome || "Não informado"}
+              </small>
             </div>
 
             {/* BOTÕES */}
@@ -87,6 +95,15 @@ function ListaTarefas({
 
               <button
                 type="button"
+                onClick={() => onAbrirComentarios(tarefa)}
+                title="Ver comentários"
+                aria-label={`Ver comentários da tarefa ${tarefa.texto}`}
+              >
+                💬
+              </button>
+
+              <button
+                type="button"
                 onClick={() => onEditar(tarefa)}
                 title="Editar tarefa"
               >
@@ -107,4 +124,5 @@ function ListaTarefas({
     </div>
   );
 }
+
 export default ListaTarefas;

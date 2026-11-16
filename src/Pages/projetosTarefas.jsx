@@ -2,17 +2,18 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import api, { mensagensDeErro } from "../api";
+import { useAuth } from "../Contexts/AuthContext";
 import ListaTarefas from "../componentes/ListaTarefas";
 import styles from "./ProjetoTarefas.module.css";
 
 function ProjetoTarefas() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { usuario } = useAuth();
 
   const [projeto, setProjeto] = useState(null);
   const [tarefas, setTarefas] = useState([]);
   const [prioridades, setPrioridades] = useState([]);
-  const [usuarios, setUsuarios] = useState([]);
   const [projetos, setProjetos] = useState([]);
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState("");
@@ -24,28 +25,23 @@ function ProjetoTarefas() {
         setErro("");
 
         const [
+          resProjeto,
           resProjetos,
           resTarefas,
           resPrioridades,
-          resUsuarios,
         ] = await Promise.all([
+          api.get(`/projetos/${id}`),
           api.get("/projetos"),
           api.get("/tarefas"),
           api.get("/prioridades"),
-          api.get("/usuarios"),
         ]);
 
-        const listaProjetos = resProjetos.data;
-        const projetoEncontrado = listaProjetos.find(
-          (item) => Number(item.id) === Number(id)
-        );
-
-        setProjetos(listaProjetos);
+        setProjeto(resProjeto.data);
+        setProjetos(resProjetos.data);
         setTarefas(resTarefas.data);
         setPrioridades(resPrioridades.data);
-        setUsuarios(resUsuarios.data);
-        setProjeto(projetoEncontrado || null);
       } catch (err) {
+        setProjeto(null);
         setErro(mensagensDeErro(err).join(" "));
       } finally {
         setCarregando(false);
@@ -70,11 +66,6 @@ function ProjetoTarefas() {
 
   const tarefasConcluidas = tarefasDoProjeto.filter(
     (tarefa) => tarefa.coluna === "concluido"
-  );
-
-  const responsavel = usuarios.find(
-    (usuario) =>
-      Number(usuario.id) === Number(projeto?.usuario_id)
   );
 
   if (carregando) {
@@ -145,7 +136,7 @@ function ProjetoTarefas() {
           <div>
             <span>Responsável</span>
             <strong>
-              {responsavel?.nome || "Usuário não encontrado"}
+              {usuario?.nome || "Usuário não identificado"}
             </strong>
           </div>
 
@@ -195,7 +186,6 @@ function ProjetoTarefas() {
           <ListaTarefas
             tarefas={tarefasAFazer}
             prioridades={prioridades}
-            usuarios={usuarios}
             projetos={projetos}
             onDeletar={() => {}}
             onConcluir={() => {}}
@@ -215,7 +205,6 @@ function ProjetoTarefas() {
           <ListaTarefas
             tarefas={tarefasAndamento}
             prioridades={prioridades}
-            usuarios={usuarios}
             projetos={projetos}
             onDeletar={() => {}}
             onConcluir={() => {}}
@@ -235,7 +224,6 @@ function ProjetoTarefas() {
           <ListaTarefas
             tarefas={tarefasConcluidas}
             prioridades={prioridades}
-            usuarios={usuarios}
             projetos={projetos}
             onDeletar={() => {}}
             onConcluir={() => {}}
