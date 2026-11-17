@@ -4,6 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import api, { mensagensDeErro } from "../api";
 import { useAuth } from "../Contexts/AuthContext";
 import ListaTarefas from "../componentes/ListaTarefas";
+import Comentarios from "../componentes/Comentarios";
 import styles from "./ProjetoTarefas.module.css";
 
 function ProjetoTarefas() {
@@ -17,6 +18,24 @@ function ProjetoTarefas() {
   const [projetos, setProjetos] = useState([]);
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState("");
+
+  // ==========================================
+  // COMENTÁRIOS
+  // ==========================================
+
+  const [tarefaComentarios, setTarefaComentarios] = useState(null);
+
+  function abrirComentarios(tarefa) {
+    setTarefaComentarios(tarefa);
+  }
+
+  function fecharComentarios() {
+    setTarefaComentarios(null);
+  }
+
+  // ==========================================
+  // CARREGAR DADOS
+  // ==========================================
 
   useEffect(() => {
     async function carregarDados() {
@@ -51,6 +70,10 @@ function ProjetoTarefas() {
     carregarDados();
   }, [id]);
 
+  // ==========================================
+  // FILTRAR TAREFAS DO PROJETO
+  // ==========================================
+
   const tarefasDoProjeto = tarefas.filter(
     (tarefa) =>
       Number(tarefa.projeto_id ?? tarefa.projetoId) === Number(id)
@@ -68,6 +91,10 @@ function ProjetoTarefas() {
     (tarefa) => tarefa.coluna === "concluido"
   );
 
+  // ==========================================
+  // CARREGAMENTO
+  // ==========================================
+
   if (carregando) {
     return (
       <div className={styles.container}>
@@ -75,6 +102,10 @@ function ProjetoTarefas() {
       </div>
     );
   }
+
+  // ==========================================
+  // ERRO
+  // ==========================================
 
   if (erro) {
     return (
@@ -91,6 +122,10 @@ function ProjetoTarefas() {
     );
   }
 
+  // ==========================================
+  // PROJETO NÃO ENCONTRADO
+  // ==========================================
+
   if (!projeto) {
     return (
       <div className={styles.container}>
@@ -106,6 +141,10 @@ function ProjetoTarefas() {
     );
   }
 
+  // ==========================================
+  // TELA
+  // ==========================================
+
   return (
     <div className={styles.container}>
       <button
@@ -116,6 +155,7 @@ function ProjetoTarefas() {
       </button>
 
       {/* CARD DO PROJETO */}
+
       <section className={styles.cardProjeto}>
         <div className={styles.cabecalhoProjeto}>
           <div>
@@ -169,12 +209,15 @@ function ProjetoTarefas() {
       </section>
 
       {/* KANBAN DO PROJETO */}
+
       <div className={styles.tituloKanban}>
         <h2>Tarefas do projeto</h2>
         <p>Acompanhe o andamento das tarefas deste projeto.</p>
       </div>
 
       <section className={`kanban ${styles.kanbanProjeto}`}>
+        {/* A FAZER */}
+
         <div className="kanban-coluna">
           <div className="kanban-coluna-header">
             <h3>A Fazer</h3>
@@ -191,8 +234,11 @@ function ProjetoTarefas() {
             onConcluir={() => {}}
             onEditar={() => {}}
             onMover={() => {}}
+            onAbrirComentarios={abrirComentarios}
           />
         </div>
+
+        {/* EM ANDAMENTO */}
 
         <div className="kanban-coluna">
           <div className="kanban-coluna-header">
@@ -210,8 +256,11 @@ function ProjetoTarefas() {
             onConcluir={() => {}}
             onEditar={() => {}}
             onMover={() => {}}
+            onAbrirComentarios={abrirComentarios}
           />
         </div>
+
+        {/* CONCLUÍDAS */}
 
         <div className="kanban-coluna">
           <div className="kanban-coluna-header">
@@ -229,9 +278,18 @@ function ProjetoTarefas() {
             onConcluir={() => {}}
             onEditar={() => {}}
             onMover={() => {}}
+            onAbrirComentarios={abrirComentarios}
           />
         </div>
       </section>
+
+      {/* PAINEL DE COMENTÁRIOS */}
+
+      <Comentarios
+        tarefa={tarefaComentarios}
+        aberto={Boolean(tarefaComentarios)}
+        onFechar={fecharComentarios}
+      />
     </div>
   );
 }

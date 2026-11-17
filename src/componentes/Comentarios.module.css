@@ -1,8 +1,7 @@
-
 .overlay {
   position: fixed;
   inset: 0;
-  background: rgba(15, 8, 20, 0.65);
+  background: rgba(0, 0, 0, 0.78);
   z-index: 2000;
   display: flex;
   justify-content: flex-end;
@@ -12,10 +11,10 @@
   width: 100%;
   max-width: 440px;
   height: 100%;
-  background: #ffffff;
+  background: linear-gradient(135deg, #17151F, #1C1924);
   display: flex;
   flex-direction: column;
-  box-shadow: -8px 0 30px rgba(0, 0, 0, 0.2);
+  box-shadow: -8px 0 30px rgba(0, 0, 0, 0.4);
   animation: entrar 0.25s ease;
 }
 
@@ -31,8 +30,8 @@
 
 .cabecalho {
   padding: 25px;
-  background: linear-gradient(135deg, #2f1738, #6d28d9);
-  color: #ffffff;
+  background: linear-gradient(135deg, #17151F, #1C1924);
+  color: #FFFFFF;
   display: flex;
   justify-content: space-between;
   gap: 15px;
@@ -41,7 +40,7 @@
 .etiqueta {
   font-size: 11px;
   letter-spacing: 2px;
-  color: #ddd6fe;
+  color: #C4B5FD;
   font-weight: bold;
 }
 
@@ -52,7 +51,7 @@
 
 .cabecalho p {
   font-size: 13px;
-  color: #ede9fe;
+  color: #A1A1AA;
   overflow-wrap: anywhere;
 }
 
@@ -61,8 +60,8 @@
   height: 36px;
   border: none;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.15);
-  color: #ffffff;
+  background: rgba(196, 181, 253, 0.15);
+  color: #FFFFFF;
   font-size: 26px;
   cursor: pointer;
   flex-shrink: 0;
@@ -76,7 +75,7 @@
 
 .mensagem {
   text-align: center;
-  color: #64748b;
+  color: #A1A1AA;
   padding: 20px;
 }
 
@@ -92,7 +91,7 @@
 .vazio {
   text-align: center;
   padding: 45px 15px;
-  color: #64748b;
+  color: #A1A1AA;
 }
 
 .vazio span {
@@ -102,7 +101,7 @@
 .vazio p {
   margin: 12px 0 5px;
   font-weight: bold;
-  color: #4c1d95;
+  color: #C4B5FD;
 }
 
 .vazio small {
@@ -117,7 +116,7 @@
 
 .comentario {
   padding-bottom: 16px;
-  border-bottom: 1px solid #ede9fe;
+  border-bottom: 1px solid #49336B;
 }
 
 .autor {
@@ -130,8 +129,8 @@
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  background: #ede9fe;
-  color: #6d28d9;
+  background: #49336B;
+  color: #FFFFFF;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -148,12 +147,12 @@
 
 .dadosAutor strong {
   font-size: 13px;
-  color: #351b40;
+  color: #FFFFFF;
 }
 
 .dadosAutor small {
   font-size: 11px;
-  color: #94a3b8;
+  color: #A1A1AA;
 }
 
 .botaoExcluir {
@@ -165,7 +164,7 @@
 
 .textoComentario {
   margin: 12px 0 0 46px;
-  color: #334155;
+  color: #E4E4E7;
   font-size: 14px;
   line-height: 1.6;
   white-space: pre-wrap;
@@ -174,31 +173,33 @@
 
 .formulario {
   padding: 20px;
-  border-top: 1px solid #ede9fe;
-  background: #faf8ff;
+  border-top: 1px solid #49336B;
+  background: linear-gradient(135deg, #17151F, #1C1924);
 }
 
 .formulario label {
   display: block;
   font-size: 13px;
   font-weight: bold;
-  color: #4c1d95;
+  color: #C4B5FD;
   margin-bottom: 8px;
 }
 
 .formulario textarea {
   width: 100%;
   resize: vertical;
-  border: 1px solid #ddd6fe;
+  border: 1px solid #49336B;
   border-radius: 10px;
   padding: 12px;
   font-family: inherit;
   font-size: 14px;
   outline: none;
+  background: #09090F;
+  color: #FFFFFF;
 }
 
 .formulario textarea:focus {
-  border-color: #7c3aed;
+  border-color: #7C3AED;
   box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.12);
 }
 
@@ -211,7 +212,7 @@
 }
 
 .rodapeFormulario small {
-  color: #94a3b8;
+  color: #A1A1AA;
   font-size: 11px;
 }
 
@@ -219,14 +220,14 @@
   border: none;
   border-radius: 8px;
   padding: 11px 16px;
-  background: #6d28d9;
-  color: #ffffff;
+  background: #7C3AED;
+  color: #FFFFFF;
   font-weight: bold;
   cursor: pointer;
 }
 
 .rodapeFormulario button:hover {
-  background: #5b21b6;
+  background: #6D28D9;
 }
 
 .rodapeFormulario button:disabled {
@@ -239,4 +240,3 @@
     max-width: 100%;
   }
 }
-

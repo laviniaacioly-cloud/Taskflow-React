@@ -19,11 +19,25 @@ function Kanban() {
   const [usuarios, setUsuarios] = useState([]);
   const [projetos, setProjetos] = useState([]);
 
+  // ==========================================
+  // COMENTÁRIOS
+  // ==========================================
+
+  const [tarefaComentarios, setTarefaComentarios] = useState(null);
+
+  function abrirComentarios(tarefa) {
+    setTarefaComentarios(tarefa);
+  }
+
+  function fecharComentarios() {
+    setTarefaComentarios(null);
+  }
+
   const [modalPrioridadeAberto, setModalPrioridadeAberto] = useState(false);
   const [prioridadeEditando, setPrioridadeEditando] = useState(null);
 
   // ==========================================
-  // MODAL
+  // MODAL DE TAREFA
   // ==========================================
 
   const [modalAberto, setModalAberto] = useState(false);
@@ -62,7 +76,6 @@ function Kanban() {
     setPrioridadeEditando(null);
   }
 
-  // EXCLUIR PRIORIDADE
   async function excluirPrioridade(prioridade) {
     const confirmar = window.confirm(
       `Deseja excluir a prioridade "${prioridade.descricao}"?`,
@@ -195,7 +208,6 @@ function Kanban() {
       setErro(mensagens.join(" "));
       console.error("Erro ao salvar tarefa:", err);
 
-      // Permite que o ModalTarefa apresente a mensagem de erro
       throw err;
     }
   }
@@ -213,6 +225,10 @@ function Kanban() {
       setTarefas((tarefasAtuais) =>
         tarefasAtuais.filter((t) => t.id !== id),
       );
+
+      if (tarefaComentarios?.id === id) {
+        fecharComentarios();
+      }
     } catch (err) {
       const mensagens = mensagensDeErro(err);
       setErro(mensagens.join(" "));
@@ -356,12 +372,9 @@ function Kanban() {
           </select>
         </div>
 
-        {/* ==================================
-            KANBAN
-        ================================== */}
+        {/* KANBAN */}
 
         <section className="kanban">
-
           {/* A FAZER */}
 
           <div className="kanban-coluna">
@@ -393,6 +406,7 @@ function Kanban() {
               onConcluir={concluirTarefa}
               onEditar={abrirModalEditar}
               onMover={moverTarefa}
+              onAbrirComentarios={abrirComentarios}
               colunaAnterior={null}
               colunaProxima="andamento"
             />
@@ -429,6 +443,7 @@ function Kanban() {
               onConcluir={concluirTarefa}
               onEditar={abrirModalEditar}
               onMover={moverTarefa}
+              onAbrirComentarios={abrirComentarios}
               colunaAnterior="afazer"
               colunaProxima="concluido"
             />
@@ -465,6 +480,7 @@ function Kanban() {
               onConcluir={concluirTarefa}
               onEditar={abrirModalEditar}
               onMover={moverTarefa}
+              onAbrirComentarios={abrirComentarios}
               colunaAnterior="andamento"
               colunaProxima={null}
             />
@@ -544,6 +560,14 @@ function Kanban() {
           onCadastrada={cadastrarPrioridade}
           prioridadeEditando={prioridadeEditando}
           onEditada={atualizarPrioridade}
+        />
+
+        {/* PAINEL DE COMENTÁRIOS */}
+
+        <Comentarios
+          tarefa={tarefaComentarios}
+          aberto={Boolean(tarefaComentarios)}
+          onFechar={fecharComentarios}
         />
       </main>
 
