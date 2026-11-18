@@ -21,7 +21,7 @@ function ProjetoTarefas() {
 
   // ==========================================
   // COMENTÁRIOS
-  // ==========================================
+  // ========================================
 
   const [tarefaComentarios, setTarefaComentarios] = useState(null);
 
