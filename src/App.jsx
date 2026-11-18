@@ -7,7 +7,7 @@ import RotaPrivada from "./componentes/RotaPrivada";
 import Kanban from "./componentes/Kanban";
 import { useAuth } from "./Contexts/AuthContext";
 import Projetos from "./Pages/Projetos";
-import ProjetoTarefas from "./Pages/ProjetoTarefas";
+import ProjetoTarefas from "./Pages/ProjetosTarefas";
 
 function App() {
   const { token } = useAuth();
