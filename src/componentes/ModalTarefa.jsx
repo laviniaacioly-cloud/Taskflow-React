@@ -1,7 +1,7 @@
-
 import { useState, useEffect } from "react";
 import styles from "./ModalTarefa.module.css";
 import { mensagensDeErro } from "../api";
+
 
 // Converte o valor do select para número.
 // Se estiver vazio, retorna null.
@@ -32,9 +32,7 @@ function ModalTarefa({
 
     if (tarefa) {
       setTexto(tarefa.texto || "");
-      setPrioridadeId(
-        tarefa.prioridade_id ?? tarefa.idprioridade ?? 2
-      );
+      setPrioridadeId(tarefa.prioridade_id ?? tarefa.idprioridade ?? 2);
       setProjetoId(tarefa.projeto_id ?? "");
     } else {
       setTexto("");
@@ -97,21 +95,16 @@ function ModalTarefa({
   if (!aberto) return null;
 
   return (
-    <div
-      className={styles.overlay}
-      onClick={() => !salvando && onFechar()}
-    >
-      <div
-        className={styles.card}
-        onClick={(e) => e.stopPropagation()}
-      >
+    <div className={styles.overlay} onClick={() => !salvando && onFechar()}>
+      <div className={styles.card} onClick={(e) => e.stopPropagation()}>
         <h2>{tarefa ? "Editar tarefa" : "Nova tarefa"}</h2>
 
         <div className={styles.campo}>
           <label htmlFor="tarefa-texto">Tarefa</label>
-          <input
+          <textarea
             id="tarefa-texto"
             placeholder="Descreva a tarefa"
+            rows={4}
             value={texto}
             onChange={(e) => setTexto(e.target.value)}
           />
@@ -158,19 +151,11 @@ function ModalTarefa({
         )}
 
         <div className={styles.botoes}>
-          <button
-            type="button"
-            onClick={onFechar}
-            disabled={salvando}
-          >
+          <button type="button" onClick={onFechar} disabled={salvando}>
             Cancelar
           </button>
 
-          <button
-            type="button"
-            onClick={handleSalvar}
-            disabled={salvando}
-          >
+          <button type="button" onClick={handleSalvar} disabled={salvando}>
             {salvando ? "Salvando..." : "Salvar"}
           </button>
         </div>
