@@ -1,7 +1,7 @@
+
 import { useState, useEffect } from "react";
 import styles from "./ModalTarefa.module.css";
 import { mensagensDeErro } from "../api";
-
 
 // Converte o valor do select para número.
 // Se estiver vazio, retorna null.
@@ -17,10 +17,12 @@ function ModalTarefa({
   coluna = "afazer",
   prioridades = [],
   projetos = [],
+  usuarios = [],
 }) {
   const [texto, setTexto] = useState("");
   const [prioridadeId, setPrioridadeId] = useState(2);
   const [projetoId, setProjetoId] = useState("");
+  const [usuarioId, setUsuarioId] = useState(1);
   const [erros, setErros] = useState([]);
   const [salvando, setSalvando] = useState(false);
 
@@ -34,10 +36,12 @@ function ModalTarefa({
       setTexto(tarefa.texto || "");
       setPrioridadeId(tarefa.prioridade_id ?? tarefa.idprioridade ?? 2);
       setProjetoId(tarefa.projeto_id ?? "");
+      setUsuarioId(tarefa.usuario_id ?? 1);
     } else {
       setTexto("");
       setPrioridadeId(2);
       setProjetoId(projetos[0]?.id ?? "");
+      setUsuarioId(1);
     }
   }, [tarefa, aberto, projetos]);
 
@@ -82,6 +86,7 @@ function ModalTarefa({
         coluna: tarefa?.coluna || coluna,
         prioridade_id: paraNumero(prioridadeId),
         projeto_id: paraNumero(projetoId),
+        usuario_id: paraNumero(usuarioId),
       });
 
       onFechar();
@@ -137,6 +142,21 @@ function ModalTarefa({
             {projetos.map((projeto) => (
               <option key={projeto.id} value={projeto.id}>
                 {projeto.nome}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className={styles.campo}>
+          <label htmlFor="tarefa-responsavel">Responsável</label>
+          <select
+            id="tarefa-responsavel"
+            value={usuarioId}
+            onChange={(e) => setUsuarioId(e.target.value)}
+          >
+            {usuarios.map((usuario) => (
+              <option key={usuario.id} value={usuario.id}>
+                {usuario.nome}
               </option>
             ))}
           </select>

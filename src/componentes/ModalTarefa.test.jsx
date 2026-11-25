@@ -114,9 +114,68 @@ describe("ModalTarefa", () => {
       coluna: "afazer",
       prioridade_id: 1,
       projeto_id: 10,
+      usuario_id: 1,
     });
 
     expect(onFechar).toHaveBeenCalledTimes(1);
+  });
+
+  test("mostra Salvando e desabilita o botão enquanto salva", async () => {
+    const user = userEvent.setup();
+
+    const onSalvar = vi.fn(() => new Promise(() => {}));
+
+    abrirModal({ onSalvar });
+
+    await user.type(screen.getByLabelText("Tarefa"), "Estudar mocks");
+
+    await user.click(screen.getByRole("button", { name: "Salvar" }));
+
+    expect(screen.getByRole("button", { name: "Salvando..." })).toBeDisabled();
+  });
+
+  test("editar envia o id e a coluna da tarefa", async () => {
+    const user = userEvent.setup();
+    const onSalvar = vi.fn().mockResolvedValue();
+
+    const tarefa = {
+      id: 7,
+      texto: "Revisar a API",
+      coluna: "andamento",
+      idprioridade: 1,
+      usuario_id: 2,
+      projeto_id: 20,
+    };
+
+    abrirModal({ tarefa, onSalvar });
+
+    await user.click(screen.getByRole("button", { name: "Salvar" }));
+
+    expect(onSalvar).toHaveBeenCalledWith(
+      expect.objectContaining({
+        id: 7,
+        coluna: "andamento",
+      }),
+    );
+  });
+
+  test("selecionar Bruno Melo envia usuario_id 2", async () => {
+    const user = userEvent.setup();
+    const onSalvar = vi.fn().mockResolvedValue();
+
+    abrirModal({ onSalvar });
+
+    await user.type(screen.getByLabelText("Tarefa"), "Estudar testes");
+
+    await user.selectOptions(screen.getByLabelText("Responsável"), "2");
+
+    await user.click(screen.getByRole("button", { name: "Salvar" }));
+
+    expect(onSalvar).toHaveBeenCalledWith(
+      expect.objectContaining({
+        usuario_id: 2,
+      }),
+    );
   });
 
   test("a API recusa: mostra os erros e não fecha", async () => {

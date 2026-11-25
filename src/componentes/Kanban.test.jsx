@@ -132,4 +132,42 @@ describe("Kanban", () => {
 
     expect(await screen.findByText("Testar o Kanban")).toBeInTheDocument();
   });
+
+  test("excluir: clicar no X chama a API e remove a tarefa", async () => {
+    const user = userEvent.setup();
+
+    api.delete.mockResolvedValue({ data: {} });
+
+    desenharKanban();
+
+    expect(await screen.findByText("Modelar o banco")).toBeInTheDocument();
+
+    const botoesExcluir = screen.getAllByTitle("Excluir tarefa");
+
+    await user.click(botoesExcluir[0]);
+
+    expect(api.delete).toHaveBeenCalledWith("/tarefas/1");
+    expect(screen.queryByText("Modelar o banco")).not.toBeInTheDocument();
+  });
+
+    test("avançar: clicar na seta chama a API com a próxima coluna", async () => {
+    const user = userEvent.setup();
+
+    api.put.mockResolvedValue({ data: {} });
+
+    desenharKanban();
+
+    expect(await screen.findByText("Modelar o banco")).toBeInTheDocument();
+
+    const botoesAvancar = screen.getAllByTitle("Avançar tarefa");
+
+    await user.click(botoesAvancar[0]);
+
+    expect(api.put).toHaveBeenCalledWith(
+      "/tarefas/1",
+      expect.objectContaining({
+        coluna: "andamento",
+      }),
+    );
+  });
 });
