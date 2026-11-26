@@ -64,8 +64,9 @@ beforeEach(() => {
 
   api.get.mockImplementation((url) =>
     Promise.resolve({ data: respostas[url] }),
+  
   );
-});
+}); 
 
 describe("Kanban", () => {
   test("mostra Carregando enquanto a API não responde", () => {
